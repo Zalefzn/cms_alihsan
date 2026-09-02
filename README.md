@@ -4,9 +4,11 @@ CMS berbasis Laravel + [Filament](https://filamentphp.com) untuk mengelola konte
 
 ## Fitur
 
-- **Manajemen Halaman** — satu entri per halaman situs (Beranda, Tentang, Guru, Kontak, dst).
+- **Manajemen Halaman** — satu entri per halaman situs (Beranda, Tentang, Guru, Kontak, dst), langsung terdaftar sebagai sub-menu di sidebar "Halaman" (klik langsung ke halamannya, tanpa lewat tabel dulu).
 - **Blok Konten drag & drop** — setiap halaman disusun dari beberapa "blok" (Hero, Teks, Galeri, Video, FAQ, Tim/Guru, Testimoni, Info Kontak, Statistik, Daftar Fitur) yang bisa ditambah, dihapus, dan **diurutkan ulang lewat drag & drop** di panel admin.
+- **Menu Navbar** — atur menu navigasi website React (label, link, urutan, submenu dropdown) secara terpisah dari konten halaman, lewat sidebar "Navigasi Website". Mendukung drag & drop untuk menu utama maupun sub-menu.
 - **Upload gambar & video** langsung dari form blok, tanpa perlu tools eksternal.
+- **Dashboard ringkas** — statistik jumlah halaman, blok konten, dan menu langsung terlihat saat login.
 - **REST API publik** untuk diambil oleh frontend (lihat di bawah).
 
 ## Menjalankan secara lokal
@@ -28,13 +30,21 @@ Panel admin bisa diakses di `http://localhost:8000/admin`.
 
 ## Cara pakai panel admin
 
+**Mengedit konten halaman**
+
 1. Login di `/admin`.
-2. Buka menu **Halaman**, klik **Kelola Konten** pada halaman yang ingin diedit.
+2. Di sidebar, grup **Halaman** langsung menampilkan semua halaman — klik salah satu untuk masuk ke editornya (atau **Semua Halaman** untuk tabel lengkap + buat halaman baru).
 3. Di bagian **Blok Konten**:
    - **Tambah Blok** untuk menambah bagian baru (pilih tipenya — form akan menyesuaikan otomatis).
    - **Edit** untuk mengubah isi tiap blok, termasuk upload gambar/video.
    - **Drag baris** pada tabel Blok Konten untuk mengubah urutan tampil di halaman.
    - Toggle **Tampil** untuk menyembunyikan blok tanpa menghapusnya.
+
+**Mengatur menu navbar**
+
+1. Di sidebar, buka grup **Navigasi Website** → **Menu Navbar**.
+2. Tambah/urutkan menu utama (drag baris untuk urutan). Kosongkan **Link** jika menu itu hanya induk dropdown (contoh: "Tentang", "Akademik").
+3. Klik **Kelola** pada satu menu untuk mengatur **Sub Menu**-nya (dropdown) — juga bisa drag & drop.
 
 ## REST API
 
@@ -44,6 +54,25 @@ Semua endpoint bersifat publik (read-only) dan hanya mengembalikan halaman/blok 
 | ------ | ------------------- | ---------------------------------------------------------- |
 | GET    | `/api/pages`        | Daftar semua halaman terbit (slug, judul, meta description) |
 | GET    | `/api/pages/{slug}` | Detail satu halaman beserta blok-bloknya, terurut, dengan URL media yang sudah lengkap |
+| GET    | `/api/menu`         | Struktur menu navbar (menu utama + sub-menu dropdown), terurut |
+
+Contoh respons `/api/menu`:
+
+```json
+{
+  "data": [
+    { "label": "Beranda", "url": "/", "open_in_new_tab": false, "children": [] },
+    {
+      "label": "Tentang",
+      "url": null,
+      "open_in_new_tab": false,
+      "children": [
+        { "label": "Tentang Kami", "url": "/about", "open_in_new_tab": false, "children": [] }
+      ]
+    }
+  ]
+}
+```
 
 Contoh respons `/api/pages/home`:
 
@@ -79,12 +108,17 @@ CORS sudah diaktifkan untuk semua origin pada path `/api/*` (lihat `config/cors.
 
 - `pages` — satu baris per halaman (`slug`, `title`, `meta_description`, `is_published`).
 - `blocks` — banyak baris per halaman (`type`, `order`, `is_visible`, `data` JSON). Urutan blok ditentukan kolom `order`, diubah lewat drag & drop di admin.
+- `menu_items` — satu baris per item navbar (`label`, `url`, `parent_id`, `order`, `is_visible`). Item dengan `parent_id` null adalah menu utama; item dengan `parent_id` terisi adalah sub-menu dropdown.
 
 Tipe blok yang tersedia didefinisikan di `app/Support/BlockDefinitions.php` — tambahkan entri baru di sana untuk menambah tipe blok baru (form admin akan otomatis mengikuti).
 
 ## Menghubungkan ke website React
 
-Website `alihsanislamicsch` bisa mengambil konten dari CMS ini dengan `fetch`/`axios` ke `NEXT_CMS_URL/api/pages/{slug}` dan me-render blok-bloknya sesuai `type`. Langkah ini belum diimplementasikan di sisi React — CMS-nya sudah siap dipakai begitu integrasinya dikerjakan.
+Website `alihsanislamicsch` bisa mengambil konten dari CMS ini dengan `fetch`/`axios`:
+- `NEXT_CMS_URL/api/pages/{slug}` → konten halaman (blok-bloknya), render sesuai `type`.
+- `NEXT_CMS_URL/api/menu` → struktur navbar, ganti link hardcoded di `navbar.tsx` dengan hasil ini.
+
+Langkah ini belum diimplementasikan di sisi React — CMS-nya sudah siap dipakai begitu integrasinya dikerjakan.
 
 ## Keamanan
 

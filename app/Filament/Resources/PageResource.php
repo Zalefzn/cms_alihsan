@@ -23,6 +23,14 @@ class PageResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Halaman';
 
+    /**
+     * Pages get a custom per-record navigation menu (see
+     * AdminPanelProvider) instead of the default single resource link,
+     * so this resource's own nav item is turned off to avoid a
+     * duplicate.
+     */
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         return $form
