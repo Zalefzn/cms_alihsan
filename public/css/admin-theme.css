@@ -143,3 +143,175 @@
 .fi-topbar {
     box-shadow: 0 1px 0 0 rgba(30, 27, 75, 0.08);
 }
+
+/* ==========================================================
+ * Split login page (resources/views/filament/pages/auth/login.blade.php)
+ * Written as plain CSS rather than Tailwind utilities: Filament's
+ * compiled theme.css is pre-purged from Filament's OWN views, so
+ * utility classes that only appear on our custom page (e.g. w-1/2,
+ * lg:flex) are silently absent from the bundle and do nothing.
+ * ========================================================== */
+.auth-split {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.auth-split-left {
+    display: none;
+    position: relative;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    padding: 3rem;
+    background: linear-gradient(155deg, #ffffff 0%, #f3e8ff 35%, #ddd6fe 60%, #f9a8d4 100%);
+}
+
+.auth-blob {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 9999px;
+    filter: blur(64px);
+}
+
+.auth-blob-1 {
+    top: -6rem;
+    right: -6rem;
+    height: 24rem;
+    width: 24rem;
+    background-color: rgba(217, 70, 239, 0.3);
+}
+
+.auth-blob-2 {
+    bottom: -8rem;
+    left: -4rem;
+    height: 20rem;
+    width: 20rem;
+    background-color: rgba(167, 139, 250, 0.4);
+}
+
+.auth-brand {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.auth-brand-logo {
+    height: 4rem;
+    width: 4rem;
+    border-radius: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 0.375rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.auth-brand-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #1f2937;
+}
+
+.auth-brand-sub {
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.auth-quote-ctn {
+    position: relative;
+}
+
+.auth-quote {
+    max-width: 28rem;
+}
+
+.auth-quote-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #1f2937;
+}
+
+.auth-quote-by {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.auth-copyright {
+    position: relative;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.auth-form-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #030712;
+}
+
+.auth-form-subheading {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.auth-split-right {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    padding: 2rem 1.5rem;
+    flex: 1;
+}
+
+.auth-form-ctn {
+    width: 100%;
+    max-width: 24rem;
+}
+
+.auth-form-header {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.auth-form-logo {
+    display: none;
+    height: 3.5rem;
+    width: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 1023px) {
+    .auth-form-logo {
+        display: block;
+    }
+}
+
+@media (min-width: 1024px) {
+    .auth-split {
+        flex-direction: row;
+    }
+
+    .auth-split-left {
+        display: flex;
+        width: 50%;
+    }
+
+    .auth-split-right {
+        width: 50%;
+    }
+
+    .auth-form-header {
+        align-items: flex-start;
+        text-align: left;
+    }
+}

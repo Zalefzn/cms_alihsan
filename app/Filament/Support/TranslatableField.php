@@ -24,7 +24,7 @@ class TranslatableField
     /**
      * @return array{0: TextInput, 1: TextInput}
      */
-    public static function text(string $name, string $label, bool $required = false): array
+    public static function text(string $name, string $label, bool $required = false, ?string $placeholder = null): array
     {
         $enName = "{$name}_en";
 
@@ -32,12 +32,14 @@ class TranslatableField
             ->label($label)
             ->required($required)
             ->maxLength(255)
+            ->placeholder($placeholder)
             ->live(onBlur: true)
             ->afterStateUpdated(fn (?string $state, Set $set, Get $get) => self::autoFill($state, $enName, $set, $get));
 
         $en = TextInput::make($enName)
             ->label("{$label} (Inggris)")
             ->maxLength(255)
+            ->placeholder($placeholder ?? 'Terisi otomatis setelah versi Indonesia diisi')
             ->hintAction(self::translateAction($name, $enName));
 
         return [$id, $en];
@@ -46,7 +48,7 @@ class TranslatableField
     /**
      * @return array{0: Textarea, 1: Textarea}
      */
-    public static function textarea(string $name, string $label, int $rows = 2, bool $required = false): array
+    public static function textarea(string $name, string $label, int $rows = 2, bool $required = false, ?string $placeholder = null): array
     {
         $enName = "{$name}_en";
 
@@ -54,12 +56,14 @@ class TranslatableField
             ->label($label)
             ->required($required)
             ->rows($rows)
+            ->placeholder($placeholder)
             ->live(onBlur: true)
             ->afterStateUpdated(fn (?string $state, Set $set, Get $get) => self::autoFill($state, $enName, $set, $get));
 
         $en = Textarea::make($enName)
             ->label("{$label} (Inggris)")
             ->rows($rows)
+            ->placeholder($placeholder ?? 'Terisi otomatis setelah versi Indonesia diisi')
             ->hintAction(self::translateAction($name, $enName));
 
         return [$id, $en];
