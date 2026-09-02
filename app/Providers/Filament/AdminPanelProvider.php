@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\PageResource;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Widgets\BlockTypeChart;
 use App\Filament\Widgets\CmsStatsOverview;
 use App\Filament\Widgets\RecentPagesWidget;
@@ -46,12 +47,12 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Indigo,
             ])
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->sidebarCollapsibleOnDesktop()
             ->navigationGroups([
-                NavigationGroup::make('Halaman')
-                    ->icon('heroicon-o-document-text'),
-                NavigationGroup::make('Navigasi Website')
-                    ->icon('heroicon-o-bars-3'),
+                NavigationGroup::make('Halaman'),
+                NavigationGroup::make('Navigasi Website'),
             ])
             ->navigationItems($this->pageNavigationItems())
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
@@ -76,6 +77,9 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

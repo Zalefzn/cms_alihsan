@@ -10,6 +10,45 @@
     box-shadow: 1px 0 0 0 rgba(255, 255, 255, 0.08);
 }
 
+/* Scrollable, but no visible scrollbar track/thumb */
+.fi-sidebar-nav {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+    gap: 1.25rem;
+}
+
+.fi-sidebar-nav::-webkit-scrollbar {
+    display: none;
+}
+
+/* Tighter vertical rhythm so the menu doesn't feel spread out */
+.fi-sidebar-nav-groups {
+    gap: 1.25rem;
+}
+
+.fi-sidebar-group-items {
+    gap: 0.125rem;
+}
+
+.fi-sidebar-item-button {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+}
+
+.fi-sidebar-group-button {
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+}
+
+/* Slightly smaller icons to match the tighter spacing */
+.fi-sidebar-item-icon,
+.fi-sidebar-group-icon {
+    height: 1.15rem;
+    width: 1.15rem;
+}
+
 .fi-sidebar-header {
     background-color: #17153a;
     box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.08);
