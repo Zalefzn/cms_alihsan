@@ -6,9 +6,10 @@ use Filament\Forms;
 
 /**
  * Central definition of every block "type" a page can be built from:
- * its label (shown in the type picker) and the form schema used to
- * edit its content. Each field is stored under the block's `data`
- * JSON column, addressed by dot-notation (e.g. "data.heading").
+ * its label + plain-language description (shown in the type picker)
+ * and the form schema used to edit its content. Each field is stored
+ * under the block's `data` JSON column, addressed by dot-notation
+ * (e.g. "data.heading").
  */
 class BlockDefinitions
 {
@@ -16,6 +17,13 @@ class BlockDefinitions
     {
         return collect(self::all())->mapWithKeys(
             fn (array $definition, string $type) => [$type => $definition['label']]
+        )->all();
+    }
+
+    public static function descriptions(): array
+    {
+        return collect(self::all())->mapWithKeys(
+            fn (array $definition, string $type) => [$type => $definition['description']]
         )->all();
     }
 
@@ -29,6 +37,7 @@ class BlockDefinitions
         return [
             'hero' => [
                 'label' => 'Hero (Banner Utama)',
+                'description' => 'Banner besar di paling atas halaman — judul utama, sub-judul, dan satu tombol.',
                 'schema' => [
                     Forms\Components\TextInput::make('data.heading')
                         ->label('Judul')
@@ -50,6 +59,7 @@ class BlockDefinitions
             ],
             'rich_text' => [
                 'label' => 'Teks / Paragraf',
+                'description' => 'Teks bebas untuk paragraf atau penjelasan panjang, bisa diberi format (bold, list, dll).',
                 'schema' => [
                     Forms\Components\TextInput::make('data.heading')
                         ->label('Judul (opsional)'),
@@ -61,6 +71,7 @@ class BlockDefinitions
             ],
             'image_gallery' => [
                 'label' => 'Galeri Gambar',
+                'description' => 'Menampilkan kumpulan foto berjejer, misalnya dokumentasi kegiatan.',
                 'schema' => [
                     Forms\Components\TextInput::make('data.caption')
                         ->label('Keterangan (opsional)'),
@@ -75,6 +86,7 @@ class BlockDefinitions
             ],
             'video' => [
                 'label' => 'Video',
+                'description' => 'Menampilkan satu video — bisa link YouTube/Vimeo, atau unggah file sendiri.',
                 'schema' => [
                     Forms\Components\TextInput::make('data.caption')
                         ->label('Keterangan (opsional)'),
@@ -91,6 +103,7 @@ class BlockDefinitions
             ],
             'cta' => [
                 'label' => 'CTA (Ajakan Bertindak)',
+                'description' => 'Kotak ajakan singkat dengan satu tombol, misalnya mendorong pengunjung untuk mendaftar.',
                 'schema' => [
                     Forms\Components\TextInput::make('data.heading')
                         ->label('Judul')
@@ -107,6 +120,7 @@ class BlockDefinitions
             ],
             'faq' => [
                 'label' => 'FAQ (Tanya Jawab)',
+                'description' => 'Daftar pertanyaan yang bisa dibuka-tutup, beserta jawabannya.',
                 'schema' => [
                     Forms\Components\TextInput::make('data.heading')
                         ->label('Judul (opsional)'),
@@ -129,6 +143,7 @@ class BlockDefinitions
             ],
             'team' => [
                 'label' => 'Tim / Guru',
+                'description' => 'Daftar orang (guru, staff, pengurus) lengkap dengan foto dan jabatan.',
                 'schema' => [
                     Forms\Components\TextInput::make('data.heading')
                         ->label('Judul (opsional)'),
@@ -153,6 +168,7 @@ class BlockDefinitions
             ],
             'testimonials' => [
                 'label' => 'Testimoni',
+                'description' => 'Kutipan/ulasan dari orang tua, alumni, atau siswa, lengkap dengan foto.',
                 'schema' => [
                     Forms\Components\TextInput::make('data.heading')
                         ->label('Judul (opsional)'),
@@ -181,6 +197,7 @@ class BlockDefinitions
             ],
             'contact_info' => [
                 'label' => 'Info Kontak',
+                'description' => 'Menampilkan alamat, telepon, email, dan peta lokasi sekolah.',
                 'schema' => [
                     Forms\Components\Textarea::make('data.address')
                         ->label('Alamat')
@@ -199,6 +216,7 @@ class BlockDefinitions
             ],
             'stats' => [
                 'label' => 'Statistik / Angka',
+                'description' => 'Angka-angka pencapaian, misalnya jumlah siswa atau tahun berdiri.',
                 'schema' => [
                     Forms\Components\Repeater::make('data.items')
                         ->label('Daftar Angka')
@@ -217,6 +235,7 @@ class BlockDefinitions
             ],
             'feature_list' => [
                 'label' => 'Daftar Fitur / Program',
+                'description' => 'Daftar keunggulan atau program, masing-masing dengan judul singkat dan deskripsi.',
                 'schema' => [
                     Forms\Components\TextInput::make('data.heading')
                         ->label('Judul (opsional)'),

@@ -20,9 +20,11 @@ class BlocksRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('type')
+                Forms\Components\Radio::make('type')
                     ->label('Tipe Blok')
+                    ->helperText('Pilih jenis konten yang ingin ditambahkan ke halaman ini.')
                     ->options(BlockDefinitions::options())
+                    ->descriptions(BlockDefinitions::descriptions())
                     ->required()
                     ->live()
                     ->disabledOn('edit')
