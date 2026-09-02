@@ -43,6 +43,8 @@ class PageResource extends Resource
                             ->label('Judul Halaman')
                             ->required()
                             ->maxLength(255)
+                            ->placeholder('Contoh: Beranda, Tentang Kami, Kontak')
+                            ->prefixIcon('heroicon-o-document-text')
                             ->live(onBlur: true)
                             ->afterStateUpdated(function (string $operation, ?string $state, Forms\Set $set, Forms\Get $get) {
                                 if ($operation === 'create') {
@@ -54,6 +56,7 @@ class PageResource extends Resource
                         Forms\Components\TextInput::make('title_en')
                             ->label('Judul Halaman (Inggris)')
                             ->maxLength(255)
+                            ->placeholder('Terisi otomatis setelah judul Indonesia diisi')
                             ->hintAction(TranslatableField::translateAction('title', 'title_en')),
                         Forms\Components\TextInput::make('slug')
                             ->label('Slug (identitas URL)')
@@ -61,14 +64,17 @@ class PageResource extends Resource
                             ->unique(ignoreRecord: true)
                             ->alphaDash()
                             ->maxLength(255)
+                            ->prefixIcon('heroicon-o-link')
+                            ->placeholder('contoh: home, about, kontak')
                             ->columnSpanFull()
                             ->helperText('Dipakai untuk memanggil konten via API, contoh: "home", "about", "kontak".'),
-                        ...TranslatableField::textarea('meta_description', 'Deskripsi Meta (SEO)'),
+                        ...TranslatableField::textarea('meta_description', 'Deskripsi Meta (SEO)', placeholder: 'Ringkasan singkat halaman ini untuk mesin pencari'),
                         Forms\Components\Select::make('icon')
                             ->label('Ikon di Sidebar')
                             ->options(PageIconOptions::options())
                             ->native(false)
                             ->default('heroicon-o-document-text')
+                            ->placeholder('Pilih ikon')
                             ->required(),
                         Forms\Components\Toggle::make('is_published')
                             ->label('Publikasikan')
@@ -113,7 +119,8 @@ class PageResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->label('Kelola Konten'),
+                    ->label('Kelola Konten')
+                    ->icon('heroicon-o-pencil-square'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

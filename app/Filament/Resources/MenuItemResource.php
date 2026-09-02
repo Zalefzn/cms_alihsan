@@ -40,11 +40,13 @@ class MenuItemResource extends Resource
             ->schema([
                 Forms\Components\Section::make()
                     ->schema([
-                        ...TranslatableField::text('label', 'Teks Menu', required: true),
+                        ...TranslatableField::text('label', 'Teks Menu', required: true, placeholder: 'Contoh: Beranda, Tentang, Kontak'),
                         Forms\Components\TextInput::make('url')
                             ->label('Link')
                             ->helperText('Contoh: "/", "/about", "/kontak". Kosongkan jika menu ini hanya jadi induk dropdown.')
                             ->maxLength(255)
+                            ->prefixIcon('heroicon-o-link')
+                            ->placeholder('/about')
                             ->columnSpanFull(),
                         Forms\Components\Toggle::make('open_in_new_tab')
                             ->label('Buka di tab baru'),

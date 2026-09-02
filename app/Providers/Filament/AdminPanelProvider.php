@@ -42,7 +42,12 @@ class AdminPanelProvider extends PanelProvider
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => '<link rel="stylesheet" href="'.e(asset('css/admin-theme.css')).'">',
+                fn (): string => '<link rel="stylesheet" href="'.e(asset('css/admin-theme.css')).'">'
+                    .'<link rel="manifest" href="'.e(asset('manifest.json')).'">'
+                    .'<meta name="theme-color" content="#4f46e5">'
+                    .'<link rel="apple-touch-icon" href="'.e(asset('images/icons/icon-192.png')).'">'
+                    .'<meta name="apple-mobile-web-app-capable" content="yes">'
+                    .'<meta name="apple-mobile-web-app-title" content="Al-Ihsan CMS">',
             )
             ->renderHook(
                 PanelsRenderHook::BODY_END,
@@ -55,9 +60,12 @@ class AdminPanelProvider extends PanelProvider
 
                     $bridgeUrl = asset('js/sweetalert-bridge.js').'?v='.filemtime(public_path('js/sweetalert-bridge.js'));
 
+                    $swScript = '<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register('.\Illuminate\Support\Js::from(asset('sw.js')).', {scope: '.\Illuminate\Support\Js::from('/').'});});}</script>';
+
                     return '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>'
                         .'<script src="'.e($bridgeUrl).'" defer></script>'
-                        .$welcomeScript;
+                        .$welcomeScript
+                        .$swScript;
                 },
             )
             ->colors([
@@ -125,6 +133,16 @@ class AdminPanelProvider extends PanelProvider
             ->sort(0)
             ->url(fn () => PageResource::getUrl('index'))
             ->isActiveWhen(fn () => request()->routeIs('filament.admin.resources.pages.index'));
+
+        /**
+         * This runs on every boot of the panel, including console
+         * commands like `migrate` on a brand-new database where the
+         * `pages` table doesn't exist yet — guard against that instead
+         * of crashing artisan.
+         */
+        if (! \Illuminate\Support\Facades\Schema::hasTable('pages')) {
+            return [$listItem];
+        }
 
         $pageItems = Page::query()
             ->orderBy('title')

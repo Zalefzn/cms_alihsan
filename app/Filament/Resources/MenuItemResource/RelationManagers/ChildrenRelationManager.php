@@ -19,10 +19,12 @@ class ChildrenRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                ...TranslatableField::text('label', 'Teks Menu', required: true),
+                ...TranslatableField::text('label', 'Teks Menu', required: true, placeholder: 'Contoh: Visi & Misi, Fasilitas'),
                 Forms\Components\TextInput::make('url')
                     ->label('Link')
                     ->maxLength(255)
+                    ->prefixIcon('heroicon-o-link')
+                    ->placeholder('/visi-misi')
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('open_in_new_tab')
                     ->label('Buka di tab baru'),
