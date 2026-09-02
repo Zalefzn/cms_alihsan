@@ -13,7 +13,9 @@ class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->visible(fn (): bool => $this->record->id !== auth()->id())
+                ->modalDescription('Akun ini tidak akan bisa masuk ke panel admin lagi.'),
         ];
     }
 }

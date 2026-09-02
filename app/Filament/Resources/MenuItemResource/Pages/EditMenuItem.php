@@ -13,7 +13,8 @@ class EditMenuItem extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->modalDescription('Sub menu di dalamnya akan ikut terhapus dan tidak bisa dikembalikan.'),
         ];
     }
 }

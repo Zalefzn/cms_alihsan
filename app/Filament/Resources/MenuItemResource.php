@@ -64,10 +64,12 @@ class MenuItemResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('label')
                     ->label('Teks Menu')
-                    ->weight('bold'),
+                    ->weight('bold')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('url')
                     ->label('Link')
-                    ->placeholder('—'),
+                    ->placeholder('—')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('children_count')
                     ->label('Sub Menu')
                     ->counts('children')
@@ -76,13 +78,20 @@ class MenuItemResource extends Resource
                     ->label('Tampil')
                     ->boolean(),
             ])
+            ->filters([
+                Tables\Filters\TernaryFilter::make('is_visible')
+                    ->label('Status Tampil')
+                    ->trueLabel('Tampil')
+                    ->falseLabel('Disembunyikan'),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->label('Kelola'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->modalDescription('Sub menu di dalamnya akan ikut terhapus dan tidak bisa dikembalikan.'),
                 ]),
             ]);
     }

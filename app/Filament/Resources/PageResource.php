@@ -6,6 +6,7 @@ use App\Filament\Resources\PageResource\Pages;
 use App\Filament\Resources\PageResource\RelationManagers\BlocksRelationManager;
 use App\Filament\Support\TranslatableField;
 use App\Models\Page;
+use App\Support\PageIconOptions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -63,10 +64,15 @@ class PageResource extends Resource
                             ->columnSpanFull()
                             ->helperText('Dipakai untuk memanggil konten via API, contoh: "home", "about", "kontak".'),
                         ...TranslatableField::textarea('meta_description', 'Deskripsi Meta (SEO)'),
+                        Forms\Components\Select::make('icon')
+                            ->label('Ikon di Sidebar')
+                            ->options(PageIconOptions::options())
+                            ->native(false)
+                            ->default('heroicon-o-document-text')
+                            ->required(),
                         Forms\Components\Toggle::make('is_published')
                             ->label('Publikasikan')
-                            ->default(true)
-                            ->columnSpanFull(),
+                            ->default(true),
                     ])
                     ->columns(2),
             ]);
@@ -76,6 +82,9 @@ class PageResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\IconColumn::make('icon')
+                    ->label('')
+                    ->icon(fn (string $state): string => $state),
                 Tables\Columns\TextColumn::make('title')
                     ->label('Judul')
                     ->searchable()
@@ -98,7 +107,9 @@ class PageResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_published')
-                    ->label('Status Terbit'),
+                    ->label('Status Terbit')
+                    ->trueLabel('Terbit')
+                    ->falseLabel('Belum Terbit'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -106,7 +117,8 @@ class PageResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->modalDescription('Seluruh blok konten di dalamnya akan ikut terhapus dan tidak bisa dikembalikan.'),
                 ]),
             ])
             ->defaultSort('title');

@@ -41,13 +41,21 @@ class ChildrenRelationManager extends RelationManager
             ->defaultSort('order')
             ->columns([
                 Tables\Columns\TextColumn::make('label')
-                    ->label('Teks Menu'),
+                    ->label('Teks Menu')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('url')
                     ->label('Link')
-                    ->placeholder('—'),
+                    ->placeholder('—')
+                    ->searchable(),
                 Tables\Columns\IconColumn::make('is_visible')
                     ->label('Tampil')
                     ->boolean(),
+            ])
+            ->filters([
+                Tables\Filters\TernaryFilter::make('is_visible')
+                    ->label('Status Tampil')
+                    ->trueLabel('Tampil')
+                    ->falseLabel('Disembunyikan'),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()

@@ -89,15 +89,22 @@ class UserResource extends Resource
                     ->dateTime('d M Y')
                     ->sortable(),
             ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('roles')
+                    ->label('Peran')
+                    ->relationship('roles', 'name'),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->label('Kelola'),
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn (User $record): bool => $record->id !== auth()->id()),
+                    ->visible(fn (User $record): bool => $record->id !== auth()->id())
+                    ->modalDescription('Akun ini tidak akan bisa masuk ke panel admin lagi.'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->modalDescription('Akun-akun ini tidak akan bisa masuk ke panel admin lagi.'),
                 ]),
             ])
             ->defaultSort('name');

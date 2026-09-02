@@ -54,10 +54,20 @@ class BlocksRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('data.heading')
                     ->label('Judul')
                     ->limit(40)
-                    ->placeholder('—'),
+                    ->placeholder('—')
+                    ->searchable(),
                 Tables\Columns\IconColumn::make('is_visible')
                     ->label('Tampil')
                     ->boolean(),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('type')
+                    ->label('Tipe Blok')
+                    ->options(BlockDefinitions::options()),
+                Tables\Filters\TernaryFilter::make('is_visible')
+                    ->label('Status Tampil')
+                    ->trueLabel('Tampil')
+                    ->falseLabel('Disembunyikan'),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
@@ -70,11 +80,13 @@ class BlocksRelationManager extends RelationManager
                     ->label('Edit')
                     ->slideOver()
                     ->modalWidth('2xl'),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->modalDescription('Isi blok akan hilang dari halaman dan tidak bisa dikembalikan.'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->modalDescription('Isi blok-blok ini akan hilang dari halaman dan tidak bisa dikembalikan.'),
                 ]),
             ]);
     }

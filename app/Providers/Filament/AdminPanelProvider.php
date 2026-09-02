@@ -39,14 +39,36 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('2.75rem')
             ->favicon(asset('images/favicon.ico'))
-            ->login()
+            ->login(\App\Filament\Pages\Auth\Login::class)
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => '<link rel="stylesheet" href="'.e(asset('css/admin-theme.css')).'">',
             )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                function (): string {
+                    $welcomeName = session()->pull('just_logged_in');
+
+                    $welcomeScript = $welcomeName
+                        ? '<script>(function(){var fire=function(){if(!window.Swal)return;Swal.fire({toast:true,position:"top-end",icon:"success",title:'.\Illuminate\Support\Js::from('Selamat datang, '.$welcomeName.'!').',showConfirmButton:false,timer:3500,timerProgressBar:true});};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",fire):fire();})();</script>'
+                        : '';
+
+                    $bridgeUrl = asset('js/sweetalert-bridge.js').'?v='.filemtime(public_path('js/sweetalert-bridge.js'));
+
+                    return '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>'
+                        .'<script src="'.e($bridgeUrl).'" defer></script>'
+                        .$welcomeScript;
+                },
+            )
             ->colors([
                 'primary' => Color::Indigo,
             ])
+            // Content stays light always; only the sidebar is dark (via
+            // admin-theme.css). Without this, a device set to a dark
+            // OS/browser preference flips the WHOLE panel to Filament's
+            // dark palette, which breaks contrast on our custom pages
+            // (e.g. white-on-white labels on the login screen).
+            ->darkMode(false)
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->sidebarCollapsibleOnDesktop()
@@ -108,7 +130,7 @@ class AdminPanelProvider extends PanelProvider
             ->orderBy('title')
             ->get()
             ->map(fn (Page $page, int $index) => NavigationItem::make($page->title)
-                ->icon('heroicon-o-document-text')
+                ->icon($page->icon ?? 'heroicon-o-document-text')
                 ->group('Halaman')
                 ->sort($index + 1)
                 ->url(fn () => PageResource::getUrl('edit', ['record' => $page]))
