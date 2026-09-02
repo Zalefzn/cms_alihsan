@@ -1,0 +1,106 @@
+/*
+ * Modern dark-sidebar theme for the Al-Ihsan CMS admin panel.
+ * The main content area stays light (per client direction); only the
+ * sidebar navigation gets a deep indigo background so it reads as a
+ * distinct "app chrome" rather than blending into the page.
+ */
+
+.fi-sidebar {
+    background-color: #1e1b4b;
+    box-shadow: 1px 0 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.fi-sidebar-header {
+    background-color: #17153a;
+    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.fi-sidebar-header .fi-logo {
+    background-color: #fff;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.6rem;
+}
+
+.fi-sidebar-header .fi-icon-btn {
+    color: #a5adcf;
+}
+
+.fi-sidebar-header .fi-icon-btn:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Group labels ("Halaman", "Navigasi Website") */
+.fi-sidebar-group-label {
+    color: #a5b4fc;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.fi-sidebar-group-icon {
+    color: #818cf8;
+}
+
+.fi-sidebar-group-collapse-button {
+    color: #a5adcf;
+}
+
+.fi-sidebar-group-button:hover .fi-sidebar-group-collapse-button {
+    color: #ffffff;
+}
+
+/* Nav items */
+.fi-sidebar-item-button:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.fi-sidebar-item-label {
+    color: #d1d5db;
+}
+
+.fi-sidebar-item-icon {
+    color: #9ca3af;
+}
+
+.fi-sidebar-item-grouped-border > div:first-child,
+.fi-sidebar-item-grouped-border > div:nth-child(2) {
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+.fi-sidebar-item-grouped-border > div:last-child {
+    background-color: #6b7280;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-button,
+.fi-sidebar-item-button.fi-active {
+    background-color: rgba(99, 102, 241, 0.22);
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-label {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: #a5b4fc;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-grouped-border > div:last-child {
+    background-color: #a5b4fc;
+}
+
+/* Modern touches on the light content area: a bit more lift on cards */
+.fi-wi-stats-overview-stat,
+.fi-section,
+.fi-ta-ctn {
+    transition: box-shadow 150ms ease, transform 150ms ease;
+}
+
+.fi-wi-stats-overview-stat:hover {
+    box-shadow: 0 8px 20px -6px rgba(30, 27, 75, 0.18);
+    transform: translateY(-1px);
+}
+
+.fi-topbar {
+    box-shadow: 0 1px 0 0 rgba(30, 27, 75, 0.08);
+}
