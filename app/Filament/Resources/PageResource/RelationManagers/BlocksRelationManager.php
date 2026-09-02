@@ -61,11 +61,15 @@ class BlocksRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->label('Tambah Blok'),
+                    ->label('Tambah Blok')
+                    ->slideOver()
+                    ->modalWidth('2xl'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->label('Edit'),
+                    ->label('Edit')
+                    ->slideOver()
+                    ->modalWidth('2xl'),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
