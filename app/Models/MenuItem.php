@@ -14,6 +14,7 @@ class MenuItem extends Model
     protected $fillable = [
         'parent_id',
         'label',
+        'label_en',
         'url',
         'order',
         'is_visible',
@@ -33,5 +34,10 @@ class MenuItem extends Model
     public function children(): HasMany
     {
         return $this->hasMany(MenuItem::class, 'parent_id')->orderBy('order');
+    }
+
+    public function localizedLabel(string $locale = 'id'): ?string
+    {
+        return ($locale === 'en' && filled($this->label_en)) ? $this->label_en : $this->label;
     }
 }

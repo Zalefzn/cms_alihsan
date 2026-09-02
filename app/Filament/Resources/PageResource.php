@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PageResource\Pages;
 use App\Filament\Resources\PageResource\RelationManagers\BlocksRelationManager;
+use App\Filament\Support\TranslatableField;
 use App\Models\Page;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -42,26 +43,30 @@ class PageResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                            ->afterStateUpdated(function (string $operation, ?string $state, Forms\Set $set, Forms\Get $get) {
                                 if ($operation === 'create') {
                                     $set('slug', \Illuminate\Support\Str::slug($state));
                                 }
+
+                                TranslatableField::autoFill($state, 'title_en', $set, $get);
                             }),
+                        Forms\Components\TextInput::make('title_en')
+                            ->label('Judul Halaman (Inggris)')
+                            ->maxLength(255)
+                            ->hintAction(TranslatableField::translateAction('title', 'title_en')),
                         Forms\Components\TextInput::make('slug')
                             ->label('Slug (identitas URL)')
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->alphaDash()
                             ->maxLength(255)
+                            ->columnSpanFull()
                             ->helperText('Dipakai untuk memanggil konten via API, contoh: "home", "about", "kontak".'),
-                        Forms\Components\Textarea::make('meta_description')
-                            ->label('Deskripsi Meta (SEO)')
-                            ->rows(2)
-                            ->maxLength(500)
-                            ->columnSpanFull(),
+                        ...TranslatableField::textarea('meta_description', 'Deskripsi Meta (SEO)'),
                         Forms\Components\Toggle::make('is_published')
                             ->label('Publikasikan')
-                            ->default(true),
+                            ->default(true)
+                            ->columnSpanFull(),
                     ])
                     ->columns(2),
             ]);

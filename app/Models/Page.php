@@ -13,7 +13,9 @@ class Page extends Model
     protected $fillable = [
         'slug',
         'title',
+        'title_en',
         'meta_description',
+        'meta_description_en',
         'is_published',
     ];
 
@@ -24,5 +26,15 @@ class Page extends Model
     public function blocks(): HasMany
     {
         return $this->hasMany(Block::class)->orderBy('order');
+    }
+
+    public function localizedTitle(string $locale = 'id'): ?string
+    {
+        return ($locale === 'en' && filled($this->title_en)) ? $this->title_en : $this->title;
+    }
+
+    public function localizedMetaDescription(string $locale = 'id'): ?string
+    {
+        return ($locale === 'en' && filled($this->meta_description_en)) ? $this->meta_description_en : $this->meta_description;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuItemResource\Pages;
 use App\Filament\Resources\MenuItemResource\RelationManagers\ChildrenRelationManager;
+use App\Filament\Support\TranslatableField;
 use App\Models\MenuItem;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -39,14 +40,12 @@ class MenuItemResource extends Resource
             ->schema([
                 Forms\Components\Section::make()
                     ->schema([
-                        Forms\Components\TextInput::make('label')
-                            ->label('Teks Menu')
-                            ->required()
-                            ->maxLength(255),
+                        ...TranslatableField::text('label', 'Teks Menu', required: true),
                         Forms\Components\TextInput::make('url')
                             ->label('Link')
                             ->helperText('Contoh: "/", "/about", "/kontak". Kosongkan jika menu ini hanya jadi induk dropdown.')
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpanFull(),
                         Forms\Components\Toggle::make('open_in_new_tab')
                             ->label('Buka di tab baru'),
                         Forms\Components\Toggle::make('is_visible')

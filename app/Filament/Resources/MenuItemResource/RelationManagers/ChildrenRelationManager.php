@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\MenuItemResource\RelationManagers;
 
+use App\Filament\Support\TranslatableField;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -18,13 +19,11 @@ class ChildrenRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('label')
-                    ->label('Teks Menu')
-                    ->required()
-                    ->maxLength(255),
+                ...TranslatableField::text('label', 'Teks Menu', required: true),
                 Forms\Components\TextInput::make('url')
                     ->label('Link')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpanFull(),
                 Forms\Components\Toggle::make('open_in_new_tab')
                     ->label('Buka di tab baru'),
                 Forms\Components\Toggle::make('is_visible')
