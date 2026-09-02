@@ -9,7 +9,9 @@ CMS berbasis Laravel + [Filament](https://filamentphp.com) untuk mengelola konte
 - **Menu Navbar** — atur menu navigasi website React (label, link, urutan, submenu dropdown) secara terpisah dari konten halaman, lewat sidebar "Navigasi Website". Mendukung drag & drop untuk menu utama maupun sub-menu.
 - **Upload gambar & video** langsung dari form blok, dengan pratinjau langsung (thumbnail gambar/video, bukan cuma nama file).
 - **Konten dwibahasa (Indonesia/Inggris)** — tiap field teks (judul halaman, isi blok, label menu, dll) punya pasangan field Inggris yang **otomatis terisi draft terjemahan** begitu field Indonesia-nya selesai diketik, plus tombol "Terjemahkan" untuk memicu ulang kapan saja. Lihat bagian [Konten dwibahasa](#konten-dwibahasa) di bawah.
-- **Dashboard ringkas** — statistik jumlah halaman, blok konten, dan menu langsung terlihat saat login.
+- **Dashboard informatif** — statistik jumlah halaman/blok/menu, grafik sebaran tipe blok, dan tabel halaman yang baru diperbarui.
+- **Notifikasi** — lonceng notifikasi di navbar, mengabari admin lain saat ada halaman baru dibuat atau status terbit sebuah halaman berubah.
+- **Manajemen Peran & Pengguna** — buat akun untuk tim (misal Editor konten) dan atur lewat UI persis apa yang boleh mereka kelola, tanpa coding. Lihat bagian [Peran & Pengguna](#peran--pengguna) di bawah.
 - **REST API publik** untuk diambil oleh frontend (lihat di bawah).
 
 ## Menjalankan secara lokal
@@ -28,11 +30,14 @@ composer install
 cp .env.example .env   # kalau .env belum ada
 php artisan key:generate
 touch database/database.sqlite
-php artisan migrate --seed
+php artisan migrate
 php artisan storage:link
 php artisan make:filament-user   # buat akun admin pertama Anda
+php artisan db:seed              # isi konten contoh + peran super_admin untuk akun di atas
 php artisan serve
 ```
+
+Urutannya penting: `RoleSeeder` (dijalankan lewat `db:seed`) memberi peran `super_admin` ke pengguna **pertama** yang ada — jadi `make:filament-user` harus dijalankan lebih dulu, baru `db:seed`.
 
 Panel admin bisa diakses di `http://localhost:8000/admin`.
 
@@ -53,6 +58,22 @@ Panel admin bisa diakses di `http://localhost:8000/admin`.
 1. Di sidebar, buka grup **Navigasi Website** → **Menu Navbar**.
 2. Tambah/urutkan menu utama (drag baris untuk urutan). Kosongkan **Link** jika menu itu hanya induk dropdown (contoh: "Tentang", "Akademik").
 3. Klik **Kelola** pada satu menu untuk mengatur **Sub Menu**-nya (dropdown) — juga bisa drag & drop.
+
+## Peran & Pengguna
+
+Diaktifkan lewat [Filament Shield](https://github.com/bezhanSalleh/filament-shield) + [spatie/laravel-permission](https://spatie.be/docs/laravel-permission) — semua pengecekan izin ditegakkan di server (bukan cuma menyembunyikan menu), lewat sidebar **Pengguna & Peran**:
+
+- **Pengguna** — buat akun baru (nama, email, kata sandi) dan pilih satu atau lebih peran untuknya.
+- **Peran & Izin** — buat peran baru atau ubah peran yang ada; setiap resource (Halaman, Menu Navbar, dst) muncul sebagai daftar checkbox per aksi (Lihat, Buat, Ubah, Hapus, dll) yang tinggal dicentang — tidak perlu coding untuk mengubah siapa boleh apa.
+
+Dua peran bawaan (dari `database/seeders/RoleSeeder.php`):
+
+| Peran | Bisa apa |
+| --- | --- |
+| `super_admin` | Semua fitur, termasuk mengelola Pengguna & Peran itu sendiri. |
+| `editor` | Lihat, buat, ubah, dan urutkan **Halaman** beserta Blok Kontennya saja — tidak bisa menghapus halaman, dan tidak bisa menyentuh Menu Navbar, Pengguna, atau Peran. |
+
+Beri peran tambahan (atau buat peran baru, mis. "Editor Menu") kapan saja lewat **Peran & Izin** — perubahan izin langsung berlaku, tidak perlu deploy ulang.
 
 ## Konten dwibahasa
 
