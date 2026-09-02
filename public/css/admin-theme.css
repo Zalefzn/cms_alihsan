@@ -296,6 +296,33 @@
     }
 }
 
+.auth-guide-link {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 9999px;
+    background-color: rgba(255, 255, 255, 0.75);
+    color: #4b5563;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+.auth-guide-link:hover {
+    background-color: #fff;
+    color: #4f46e5;
+}
+
+.auth-guide-icon {
+    height: 1.35rem;
+    width: 1.35rem;
+}
+
 @media (min-width: 1024px) {
     .auth-split {
         flex-direction: row;

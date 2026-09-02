@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alihsan-cms-shell-v1';
+const CACHE_NAME = 'alihsan-cms-shell-v2';
 
 const PRECACHE_URLS = [
     '/css/admin-theme.css',
@@ -46,7 +46,23 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    /**
+     * Stale-while-revalidate: serve instantly from cache when available,
+     * but always fetch in the background and update the cache — so a
+     * deploy (or a local CSS/JS edit) is picked up on the *next* load
+     * instead of being stuck behind a cache-first copy indefinitely.
+     */
     event.respondWith(
-        caches.match(request).then((cached) => cached || fetch(request)),
+        caches.open(CACHE_NAME).then((cache) => cache.match(request).then((cached) => {
+            const network = fetch(request).then((response) => {
+                if (response.ok) {
+                    cache.put(request, response.clone());
+                }
+
+                return response;
+            }).catch(() => cached);
+
+            return cached || network;
+        })),
     );
 });

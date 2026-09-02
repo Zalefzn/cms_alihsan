@@ -9,6 +9,16 @@
     weights, colors) are still used directly.
 --}}
 <div class="auth-split">
+    <a
+        href="{{ route('panduan') }}"
+        target="_blank"
+        rel="noopener"
+        class="auth-guide-link"
+        title="Panduan Penggunaan CMS"
+    >
+        <x-filament::icon icon="heroicon-o-cog-6-tooth" class="auth-guide-icon" />
+    </a>
+
     {{-- Decorative left panel — hidden on small screens --}}
     <div class="auth-split-left">
         <div class="auth-blob auth-blob-1"></div>
