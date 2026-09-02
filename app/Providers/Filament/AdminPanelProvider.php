@@ -3,12 +3,15 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\PageResource;
+use App\Filament\Widgets\BlockTypeChart;
 use App\Filament\Widgets\CmsStatsOverview;
+use App\Filament\Widgets\RecentPagesWidget;
 use App\Models\Page;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
@@ -31,14 +34,19 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('Al-Ihsan CMS')
+            ->brandLogo(asset('images/logo.png'))
+            ->brandLogoHeight('2.75rem')
+            ->favicon(asset('images/favicon.ico'))
             ->login()
             ->colors([
                 'primary' => Color::Indigo,
             ])
             ->sidebarCollapsibleOnDesktop()
             ->navigationGroups([
-                'Halaman',
-                'Navigasi Website',
+                NavigationGroup::make('Halaman')
+                    ->icon('heroicon-o-document-text'),
+                NavigationGroup::make('Navigasi Website')
+                    ->icon('heroicon-o-bars-3'),
             ])
             ->navigationItems($this->pageNavigationItems())
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
@@ -50,6 +58,8 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 CmsStatsOverview::class,
+                BlockTypeChart::class,
+                RecentPagesWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
