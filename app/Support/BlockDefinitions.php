@@ -53,6 +53,8 @@ class BlockDefinitions
                     Forms\Components\FileUpload::make('data.image')
                         ->label('Gambar')
                         ->image()
+                        ->panelLayout('integrated')
+                        ->imagePreviewHeight('250')
                         ->directory('blocks')
                         ->columnSpanFull(),
                 ],
@@ -80,6 +82,7 @@ class BlockDefinitions
                         ->image()
                         ->multiple()
                         ->reorderable()
+                        ->panelLayout('grid')
                         ->directory('blocks')
                         ->columnSpanFull(),
                 ],
@@ -97,6 +100,8 @@ class BlockDefinitions
                     Forms\Components\FileUpload::make('data.video')
                         ->label('Unggah File Video')
                         ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/ogg'])
+                        ->panelLayout('integrated')
+                        ->imagePreviewHeight('250')
                         ->directory('blocks')
                         ->columnSpanFull(),
                 ],
@@ -153,6 +158,7 @@ class BlockDefinitions
                             Forms\Components\FileUpload::make('photo')
                                 ->label('Foto')
                                 ->image()
+                                ->avatar()
                                 ->directory('blocks/team'),
                             Forms\Components\TextInput::make('name')
                                 ->label('Nama')
@@ -178,6 +184,7 @@ class BlockDefinitions
                             Forms\Components\FileUpload::make('photo')
                                 ->label('Foto')
                                 ->image()
+                                ->avatar()
                                 ->directory('blocks/testimonials'),
                             Forms\Components\TextInput::make('name')
                                 ->label('Nama')
