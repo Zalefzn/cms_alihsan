@@ -16,11 +16,38 @@
     <div style="padding:20px;">
         @switch($type)
             @case('hero')
-                <div style="{{ $card }} background:linear-gradient(135deg,{{ $indigo }},#312e81);padding:28px 20px;text-align:center;position:relative;">
-                    <div style="height:14px;width:60%;background:#fff;border-radius:4px;margin:0 auto 10px;"></div>
-                    <div style="height:8px;width:38%;background:rgba(255,255,255,.6);border-radius:4px;margin:0 auto 16px;"></div>
-                    <div style="height:22px;width:110px;background:#fff;border-radius:999px;margin:0 auto;"></div>
-                    <div style="position:absolute;bottom:0;left:0;right:0;height:16px;background:#fff;clip-path:polygon(0 60%,10% 40%,25% 70%,40% 30%,55% 65%,70% 35%,85% 60%,100% 45%,100% 100%,0 100%);"></div>
+                @php $activeVariant = $variant ?? array_key_first($variants ?? ['center' => '']); @endphp
+                <div style="display:grid;grid-template-columns:repeat({{ max(count($variants ?? []), 1) }},1fr);gap:12px;">
+                    @foreach (($variants ?? ['center' => 'Standar']) as $variantKey => $variantLabel)
+                        @php $isActive = $activeVariant === $variantKey; @endphp
+                        <div style="border-radius:8px;padding:6px;{{ $isActive ? 'box-shadow:0 0 0 2px '.$indigo.';' : 'box-shadow:0 0 0 1px '.$muted.';' }}">
+                            @if ($variantKey === 'split')
+                                <div style="{{ $card }} background:linear-gradient(135deg,#e0e7ff,#dbeafe);padding:14px 12px;">
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center;">
+                                        <div>
+                                            <div style="height:8px;width:85%;background:{{ $text }};border-radius:3px;margin-bottom:6px;"></div>
+                                            <div style="height:6px;width:60%;background:{{ $mutedDark }};border-radius:3px;"></div>
+                                        </div>
+                                        <div style="{{ $card }} aspect-ratio:4/3;background:{{ $mutedDark }};display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:14px;">🖼</div>
+                                    </div>
+                                </div>
+                            @elseif ($variantKey === 'minimal')
+                                <div style="{{ $card }} background:linear-gradient(135deg,{{ $indigo }},#312e81);padding:16px 10px;text-align:center;">
+                                    <div style="height:8px;width:60%;background:#fff;border-radius:3px;margin:0 auto 6px;"></div>
+                                    <div style="height:5px;width:38%;background:rgba(255,255,255,.6);border-radius:3px;margin:0 auto;"></div>
+                                </div>
+                            @else
+                                <div style="{{ $card }} background:linear-gradient(135deg,{{ $indigo }},#312e81);padding:16px 10px;text-align:center;position:relative;">
+                                    <div style="height:8px;width:60%;background:#fff;border-radius:3px;margin:0 auto 6px;"></div>
+                                    <div style="height:5px;width:38%;background:rgba(255,255,255,.6);border-radius:3px;margin:0 auto 10px;"></div>
+                                    <div style="position:absolute;bottom:0;left:0;right:0;height:10px;background:#fff;clip-path:polygon(0 60%,10% 40%,25% 70%,40% 30%,55% 65%,70% 35%,85% 60%,100% 45%,100% 100%,0 100%);"></div>
+                                </div>
+                            @endif
+                            <div style="text-align:center;font-size:11px;margin-top:6px;color:{{ $isActive ? $indigo : '#6b7280' }};font-weight:{{ $isActive ? '600' : '400' }};">
+                                {{ $variantLabel }}
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
                 @break
 

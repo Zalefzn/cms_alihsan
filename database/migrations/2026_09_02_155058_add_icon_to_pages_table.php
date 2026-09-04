@@ -11,7 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pages', function (Blueprint $table) {
-            $table->string('icon')->default('heroicon-o-document-text')->after('slug');
+            $table->string('icon')->default('lucide-file-text')->after('slug');
         });
 
         foreach (PageIconOptions::defaultsBySlug() as $slug => $icon) {

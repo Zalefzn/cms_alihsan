@@ -20,19 +20,36 @@ class BlocksRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Radio::make('type')
+                Forms\Components\Select::make('type')
                     ->label('Tipe Blok')
                     ->helperText('Pilih jenis konten yang ingin ditambahkan ke halaman ini.')
                     ->options(BlockDefinitions::options())
-                    ->descriptions(BlockDefinitions::descriptions())
+                    ->native(false)
+                    ->searchable()
                     ->required()
                     ->live()
                     ->disabledOn('edit')
                     ->columnSpanFull(),
+                Forms\Components\Placeholder::make('type_description')
+                    ->label('')
+                    ->content(fn (Get $get): ?string => BlockDefinitions::descriptions()[$get('type')] ?? null)
+                    ->visible(fn (Get $get): bool => filled($get('type')))
+                    ->columnSpanFull(),
+                Forms\Components\Radio::make('data.variant')
+                    ->label('Varian Tampilan')
+                    ->helperText('Gaya layout section ini di halaman web — isi kontennya tetap sama. Bandingkan pratinjaunya di bawah.')
+                    ->options(fn (Get $get): array => BlockDefinitions::variantOptions($get('type') ?? ''))
+                    ->live()
+                    ->visible(fn (Get $get): bool => BlockDefinitions::variantOptions($get('type') ?? '') !== [])
+                    ->columnSpanFull(),
                 Forms\Components\ViewField::make('block_preview')
                     ->label('Pratinjau Tampilan')
                     ->view('filament.forms.components.block-type-preview')
-                    ->viewData(fn (Get $get): array => ['type' => $get('type')])
+                    ->viewData(fn (Get $get): array => [
+                        'type' => $get('type'),
+                        'variant' => $get('data.variant'),
+                        'variants' => BlockDefinitions::variantOptions($get('type') ?? ''),
+                    ])
                     ->visible(fn (Get $get): bool => filled($get('type')))
                     ->dehydrated(false)
                     ->columnSpanFull(),

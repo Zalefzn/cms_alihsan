@@ -148,7 +148,7 @@ class AdminPanelProvider extends PanelProvider
             ->orderBy('title')
             ->get()
             ->map(fn (Page $page, int $index) => NavigationItem::make($page->title)
-                ->icon($page->icon ?? 'heroicon-o-document-text')
+                ->icon($page->icon ?? 'lucide-file-text')
                 ->group('Halaman')
                 ->sort($index + 1)
                 ->url(fn () => PageResource::getUrl('edit', ['record' => $page]))

@@ -73,7 +73,7 @@ class PageResource extends Resource
                             ->label('Ikon di Sidebar')
                             ->options(PageIconOptions::options())
                             ->native(false)
-                            ->default('heroicon-o-document-text')
+                            ->default('lucide-file-text')
                             ->placeholder('Pilih ikon')
                             ->required(),
                         Forms\Components\Toggle::make('is_published')

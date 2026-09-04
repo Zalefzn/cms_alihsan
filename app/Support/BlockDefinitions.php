@@ -38,12 +38,23 @@ class BlockDefinitions
         return self::all()[$type]['schema'] ?? [];
     }
 
+    /** Named visual layouts a block type can be rendered as, keyed by type. Empty array = no variant choice. */
+    public static function variantOptions(string $type): array
+    {
+        return self::all()[$type]['variants'] ?? [];
+    }
+
     public static function all(): array
     {
         return [
             'hero' => [
                 'label' => 'Hero (Banner Utama)',
                 'description' => 'Banner besar di paling atas halaman — judul utama, sub-judul, dan satu tombol.',
+                'variants' => [
+                    'center' => 'Pusat + Gelombang (Standar)',
+                    'split' => 'Split — Teks Kiri, Foto Kanan',
+                    'minimal' => 'Pusat Tanpa Gelombang',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Pendidikan Terbaik untuk Anak Anda'),
                     ...TranslatableField::textarea('data.subheading', 'Sub Judul', placeholder: 'Kalimat pendukung di bawah judul utama'),
