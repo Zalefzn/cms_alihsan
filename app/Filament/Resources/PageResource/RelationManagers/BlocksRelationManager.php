@@ -29,6 +29,13 @@ class BlocksRelationManager extends RelationManager
                     ->live()
                     ->disabledOn('edit')
                     ->columnSpanFull(),
+                Forms\Components\ViewField::make('block_preview')
+                    ->label('Pratinjau Tampilan')
+                    ->view('filament.forms.components.block-type-preview')
+                    ->viewData(fn (Get $get): array => ['type' => $get('type')])
+                    ->visible(fn (Get $get): bool => filled($get('type')))
+                    ->dehydrated(false)
+                    ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_visible')
                     ->label('Tampilkan blok ini')
                     ->default(true)
