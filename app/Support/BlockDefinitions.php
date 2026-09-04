@@ -76,6 +76,8 @@ class BlockDefinitions
                     'center' => 'Pusat + Gelombang (Standar)',
                     'split' => 'Split — Teks Kiri, Foto Kanan',
                     'minimal' => 'Pusat Tanpa Gelombang',
+                    'banner' => 'Banner Ramping (Padding Minim)',
+                    'fullscreen' => 'Layar Penuh (Ukuran Besar)',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Pendidikan Terbaik untuk Anak Anda'),
@@ -102,6 +104,9 @@ class BlockDefinitions
                 'variants' => [
                     'standard' => 'Tengah (Standar)',
                     'left' => 'Rata Kiri',
+                    'two_column' => 'Dua Kolom Teks',
+                    'boxed' => 'Kotak Bertepi (Card)',
+                    'highlight' => 'Kotak Warna Sorot',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Tentang Kami'),
@@ -114,6 +119,9 @@ class BlockDefinitions
                 'variants' => [
                     'grid' => 'Grid (Standar)',
                     'carousel' => 'Carousel — Geser Horizontal',
+                    'masonry' => 'Masonry — Tinggi Bervariasi',
+                    'columns_2' => 'Grid 2 Kolom Besar',
+                    'strip' => 'Strip Geser Tipis',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.caption', 'Keterangan (opsional)', placeholder: 'Dokumentasi kegiatan 2026'),
@@ -133,9 +141,13 @@ class BlockDefinitions
                 'variants' => [
                     'standard' => 'Standar (dengan judul)',
                     'compact' => 'Ramping (tanpa judul)',
+                    'side_by_side' => 'Video + Teks Berdampingan',
+                    'background' => 'Latar Belakang Penuh + Overlay',
+                    'framed' => 'Berbingkai Dekoratif',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.caption', 'Keterangan (opsional)', placeholder: 'Profil sekolah dalam 2 menit'),
+                    ...TranslatableField::textarea('data.body', 'Teks Pendamping (opsional, dipakai varian Berdampingan)', placeholder: 'Penjelasan singkat tentang video ini'),
                     Forms\Components\TextInput::make('data.embed_url')
                         ->label('Link YouTube / Vimeo')
                         ->helperText('Isi ini ATAU unggah file video di bawah, tidak perlu keduanya.')
@@ -158,6 +170,9 @@ class BlockDefinitions
                 'variants' => [
                     'plain' => 'Polos (Standar)',
                     'banner' => 'Banner Warna',
+                    'split' => 'Teks Kiri, Tombol Kanan',
+                    'gradient' => 'Gradasi Warna',
+                    'boxed_card' => 'Kartu Terpisah',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Pendaftaran 2026 Sudah Dibuka'),
@@ -177,6 +192,9 @@ class BlockDefinitions
                 'variants' => [
                     'accordion' => 'Akordeon (Standar)',
                     'grid' => 'Grid Dua Kolom',
+                    'two_column' => 'Akordeon Dua Kolom',
+                    'minimal_list' => 'List Polos Tanpa Akordeon',
+                    'boxed' => 'Akordeon Dalam Kartu',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Pertanyaan yang Sering Diajukan'),
@@ -199,6 +217,9 @@ class BlockDefinitions
                 'variants' => [
                     'grid' => 'Grid Bulat (Standar)',
                     'list' => 'Kartu List Horizontal',
+                    'compact_grid' => 'Grid Rapat (Lebih Banyak per Baris)',
+                    'carousel' => 'Carousel Geser',
+                    'minimal' => 'Minimalis (Teks + Foto Kecil)',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Guru & Staff Kami'),
@@ -232,6 +253,9 @@ class BlockDefinitions
                 'variants' => [
                     'carousel' => 'Carousel Geser (Standar)',
                     'grid' => 'Grid Statis',
+                    'single_featured' => 'Satu Kutipan Besar Bergantian',
+                    'masonry' => 'Masonry Bertumpuk',
+                    'minimal_quote' => 'Kutipan Polos Tanpa Kartu',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Apa Kata Mereka'),
@@ -266,6 +290,9 @@ class BlockDefinitions
                 'variants' => [
                     'standard' => 'Berdampingan (Standar)',
                     'stacked' => 'Bertumpuk (Peta di Bawah)',
+                    'cards' => 'Setiap Info Jadi Kartu',
+                    'sidebar' => 'Sidebar Warna + Peta',
+                    'minimal' => 'Minimalis Tanpa Peta',
                 ],
                 'schema' => [
                     ...TranslatableField::textarea('data.address', 'Alamat', placeholder: 'Jl. Contoh No. 1, Kota, Provinsi'),
@@ -292,6 +319,9 @@ class BlockDefinitions
                 'variants' => [
                     'inline' => 'Sejajar (Standar)',
                     'cards' => 'Kartu Terpisah',
+                    'circular' => 'Lingkaran Angka',
+                    'gradient_band' => 'Pita Gradasi Selebar Halaman',
+                    'bordered_grid' => 'Grid Bertepi',
                 ],
                 'schema' => [
                     Forms\Components\Repeater::make('data.items')
@@ -315,6 +345,9 @@ class BlockDefinitions
                 'variants' => [
                     'grid' => 'Grid Kartu (Standar)',
                     'list' => 'List Bernomor',
+                    'timeline' => 'Garis Waktu Vertikal',
+                    'icons_row' => 'Baris Ikon Horizontal',
+                    'alternating' => 'Zig-zag Kiri-Kanan',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Program Unggulan'),
@@ -343,6 +376,9 @@ class BlockDefinitions
                 'variants' => [
                     'standard' => 'Dua Kolom (Standar)',
                     'overlay' => 'Foto Latar Belakang Penuh',
+                    'stacked' => 'Foto Atas, Teks Bawah',
+                    'side_card' => 'Kartu Mengambang di Tepi Foto',
+                    'minimal' => 'Polos Tanpa Dekorasi',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Kenali Lebih Dekat Al-Ihsan'),
@@ -381,6 +417,9 @@ class BlockDefinitions
                 'variants' => [
                     'columns' => 'Dua Kolom (Standar)',
                     'stacked' => 'Bertumpuk Vertikal',
+                    'tabs' => 'Visi & Misi Sebagai Tab',
+                    'timeline' => 'Misi Sebagai Garis Waktu',
+                    'cards' => 'Visi & Misi Masing-masing Kartu',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul Kiri', required: true, placeholder: 'Tentang Kami'),
@@ -403,6 +442,9 @@ class BlockDefinitions
                 'variants' => [
                     'colorful' => 'Kartu Warna (Standar)',
                     'minimal' => 'Kartu Minimalis',
+                    'horizontal' => 'Kartu List Horizontal',
+                    'bordered' => 'Kartu Bertepi Tanpa Foto Bulat',
+                    'stacked_image' => 'Foto Penuh di Atas',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Program Kami'),
@@ -457,6 +499,9 @@ class BlockDefinitions
                 'variants' => [
                     'grid' => 'Grid Kartu (Standar)',
                     'list' => 'List Horizontal',
+                    'featured' => 'Satu Berita Utama + Grid Kecil',
+                    'magazine' => 'Gaya Majalah Asimetris',
+                    'minimal_list' => 'List Teks Tanpa Foto',
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Berita & Event Sekolah'),
@@ -485,6 +530,254 @@ class BlockDefinitions
                         ->reorderable()
                         ->collapsible()
                         ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                        ->columnSpanFull(),
+                ],
+            ],
+            'accordion_tabs' => [
+                'label' => 'Konten Tab / Akordeon',
+                'description' => 'Beberapa bagian konten yang bisa dibuka satu per satu, atau lewat tab — cocok untuk kebijakan, prosedur, atau info berlapis.',
+                'variants' => [
+                    'accordion' => 'Akordeon (Standar)',
+                    'tabs' => 'Tab Mendatar',
+                    'boxed_accordion' => 'Akordeon Dalam Kartu',
+                    'numbered_list' => 'List Bernomor Terbuka Semua',
+                    'two_column' => 'Akordeon Dua Kolom',
+                ],
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Kebijakan & Prosedur'),
+                    Forms\Components\Repeater::make('data.items')
+                        ->label('Daftar Bagian')
+                        ->schema([
+                            ...TranslatableField::text('title', 'Judul Bagian', required: true, placeholder: 'Kebijakan Seragam'),
+                            ...TranslatableField::textarea('body', 'Isi', rows: 3, required: true, placeholder: 'Penjelasan bagian ini'),
+                        ])
+                        ->columns(2)
+                        ->reorderable()
+                        ->collapsible()
+                        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                        ->columnSpanFull(),
+                ],
+            ],
+            'pricing_table' => [
+                'label' => 'Tabel Harga / Biaya',
+                'description' => 'Kartu-kartu biaya atau paket, masing-masing dengan harga, daftar fitur, dan tombol.',
+                'variants' => [
+                    'cards' => 'Kartu Sejajar (Standar)',
+                    'table' => 'Tabel Perbandingan',
+                    'minimal' => 'Kartu Minimalis',
+                    'horizontal' => 'Kartu List Horizontal',
+                    'featured_center' => 'Kartu Tengah Lebih Besar',
+                ],
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Biaya Pendaftaran'),
+                    ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung'),
+                    Forms\Components\Repeater::make('data.items')
+                        ->label('Daftar Paket')
+                        ->schema([
+                            ...TranslatableField::text('title', 'Nama Paket', required: true, placeholder: 'Kelompok Bermain'),
+                            Forms\Components\TextInput::make('price')
+                                ->label('Harga')
+                                ->required()
+                                ->placeholder('Rp 2.500.000'),
+                            Forms\Components\TextInput::make('period')
+                                ->label('Keterangan Harga (opsional)')
+                                ->placeholder('/ tahun ajaran'),
+                            Forms\Components\Toggle::make('highlighted')
+                                ->label('Tonjolkan Paket Ini')
+                                ->default(false),
+                            Forms\Components\Repeater::make('features')
+                                ->label('Daftar Fitur / Termasuk')
+                                ->schema([
+                                    ...TranslatableField::text('label', 'Teks', required: true, placeholder: 'Gratis seragam'),
+                                ])
+                                ->reorderable()
+                                ->columnSpanFull(),
+                            ...TranslatableField::text('cta_text', 'Teks Tombol (opsional)', placeholder: 'Daftar Sekarang'),
+                            Forms\Components\TextInput::make('cta_link')
+                                ->label('Link Tombol (opsional)')
+                                ->url()
+                                ->placeholder('/penerimaan')
+                                ->columnSpanFull(),
+                        ])
+                        ->columns(2)
+                        ->reorderable()
+                        ->collapsible()
+                        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                        ->columnSpanFull(),
+                ],
+            ],
+            'countdown' => [
+                'label' => 'Hitung Mundur',
+                'description' => 'Hitung mundur menuju tanggal penting, misalnya batas akhir pendaftaran.',
+                'variants' => [
+                    'standard' => 'Standar',
+                    'boxed' => 'Kotak Terpisah',
+                    'banner' => 'Banner Warna Selebar Halaman',
+                    'minimal' => 'Minimalis (Angka Saja)',
+                    'dark' => 'Latar Gelap',
+                ],
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Pendaftaran Ditutup Dalam'),
+                    ...TranslatableField::textarea('data.subheading', 'Sub Judul (opsional)', placeholder: 'Segera daftarkan putra-putri Anda'),
+                    Forms\Components\DateTimePicker::make('data.target_date')
+                        ->label('Tanggal & Waktu Target')
+                        ->required()
+                        ->native(false),
+                    ...TranslatableField::text('data.cta_text', 'Teks Tombol (opsional)', placeholder: 'Daftar Sekarang'),
+                    Forms\Components\TextInput::make('data.cta_link')
+                        ->label('Link Tombol (opsional)')
+                        ->url()
+                        ->placeholder('/penerimaan')
+                        ->columnSpanFull(),
+                ],
+            ],
+            'logo_cloud' => [
+                'label' => 'Logo Partner / Akreditasi',
+                'description' => 'Barisan logo mitra, sponsor, atau lembaga akreditasi.',
+                'variants' => [
+                    'grid' => 'Grid (Standar)',
+                    'carousel' => 'Carousel Geser',
+                    'inline_row' => 'Satu Baris Sejajar',
+                    'bordered_grid' => 'Grid Bertepi',
+                    'grayscale' => 'Hitam-Putih (Berwarna saat Disorot)',
+                ],
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Dipercaya & Diakui Oleh'),
+                    Forms\Components\Repeater::make('data.logos')
+                        ->label('Daftar Logo')
+                        ->schema([
+                            Forms\Components\FileUpload::make('image')
+                                ->label('Logo')
+                                ->image()
+                                ->panelLayout('integrated')
+                                ->imagePreviewHeight('100')
+                                ->directory('blocks/logos')
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('label')
+                                ->label('Nama (opsional)')
+                                ->placeholder('Kemendikbud'),
+                        ])
+                        ->columns(2)
+                        ->reorderable()
+                        ->collapsible()
+                        ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                        ->columnSpanFull(),
+                ],
+            ],
+            'quote' => [
+                'label' => 'Kutipan Tunggal',
+                'description' => 'Satu kutipan besar yang disorot, misalnya sambutan kepala sekolah.',
+                'variants' => [
+                    'centered' => 'Tengah (Standar)',
+                    'side_photo' => 'Foto di Samping',
+                    'boxed' => 'Kotak Bertepi',
+                    'minimal' => 'Minimalis Tanpa Tanda Kutip',
+                    'large_type' => 'Teks Sangat Besar',
+                ],
+                'schema' => [
+                    ...TranslatableField::textarea('data.quote', 'Kutipan', rows: 4, required: true, placeholder: 'Tulis kutipannya di sini'),
+                    Forms\Components\TextInput::make('data.name')
+                        ->label('Nama')
+                        ->placeholder('H. Abdullah, S.Pd.'),
+                    ...TranslatableField::text('data.role', 'Jabatan (opsional)', placeholder: 'Kepala Sekolah'),
+                    Forms\Components\FileUpload::make('data.photo')
+                        ->label('Foto (opsional)')
+                        ->image()
+                        ->avatar()
+                        ->directory('blocks/quote')
+                        ->columnSpanFull(),
+                ],
+            ],
+            'counter' => [
+                'label' => 'Angka Berjalan (Counter)',
+                'description' => 'Angka pencapaian dengan animasi berjalan dan ikon — mirip Statistik tapi lebih visual.',
+                'variants' => [
+                    'inline' => 'Sejajar (Standar)',
+                    'cards' => 'Kartu Terpisah',
+                    'circular' => 'Lingkaran Progres',
+                    'icons_top' => 'Ikon Besar di Atas',
+                    'gradient_band' => 'Pita Gradasi Selebar Halaman',
+                ],
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Pencapaian Kami'),
+                    Forms\Components\Repeater::make('data.items')
+                        ->label('Daftar Angka')
+                        ->schema([
+                            Forms\Components\Select::make('icon')
+                                ->label('Ikon')
+                                ->options(self::iconOptions())
+                                ->native(false)
+                                ->columnSpanFull(),
+                            ...TranslatableField::text('label', 'Label', required: true, placeholder: 'Jumlah Siswa'),
+                            Forms\Components\TextInput::make('value')
+                                ->label('Nilai Angka')
+                                ->numeric()
+                                ->required()
+                                ->placeholder('500'),
+                            Forms\Components\TextInput::make('suffix')
+                                ->label('Akhiran (opsional)')
+                                ->placeholder('+'),
+                        ])
+                        ->columns(2)
+                        ->reorderable()
+                        ->collapsible()
+                        ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                        ->columnSpanFull(),
+                ],
+            ],
+            'downloads' => [
+                'label' => 'Unduhan Dokumen',
+                'description' => 'Daftar file yang bisa diunduh pengunjung, misalnya formulir pendaftaran atau brosur.',
+                'variants' => [
+                    'list' => 'List (Standar)',
+                    'grid' => 'Grid Kartu',
+                    'cards' => 'Kartu Besar',
+                    'table' => 'Tabel',
+                    'minimal' => 'Minimalis (Teks Saja)',
+                ],
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Formulir & Dokumen'),
+                    Forms\Components\Repeater::make('data.items')
+                        ->label('Daftar File')
+                        ->schema([
+                            ...TranslatableField::text('title', 'Nama File', required: true, placeholder: 'Formulir Pendaftaran PPDB'),
+                            Forms\Components\FileUpload::make('file')
+                                ->label('File')
+                                ->directory('blocks/downloads')
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('size_label')
+                                ->label('Keterangan Ukuran (opsional)')
+                                ->placeholder('PDF, 1.2 MB'),
+                            Forms\Components\Select::make('icon')
+                                ->label('Ikon (opsional)')
+                                ->options(self::iconOptions())
+                                ->native(false),
+                        ])
+                        ->columns(2)
+                        ->reorderable()
+                        ->collapsible()
+                        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                        ->columnSpanFull(),
+                ],
+            ],
+            'map' => [
+                'label' => 'Peta Lokasi',
+                'description' => 'Peta lokasi berdiri sendiri, tanpa info kontak lain di sampingnya.',
+                'variants' => [
+                    'standard' => 'Standar',
+                    'side_info' => 'Peta + Info di Samping',
+                    'fullwidth' => 'Selebar Halaman',
+                    'boxed' => 'Kotak Bertepi',
+                    'minimal' => 'Minimalis Tanpa Judul',
+                ],
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Lokasi Kami'),
+                    ...TranslatableField::textarea('data.address', 'Alamat (opsional, dipakai varian Peta + Info)', placeholder: 'Jl. Contoh No. 1, Kota, Provinsi'),
+                    Forms\Components\Textarea::make('data.map_embed')
+                        ->label('URL Embed Google Maps')
+                        ->required()
+                        ->rows(2)
+                        ->placeholder('https://maps.google.com/...')
                         ->columnSpanFull(),
                 ],
             ],

@@ -3,6 +3,12 @@
     // Filament's compiled Tailwind CSS purge list. When the current type has
     // variants, every variant gets its own small card side by side (the active
     // one highlighted) so admins can compare before picking.
+    //
+    // With 23 block types × 5 variants (115 combinations) a fully bespoke mockup
+    // per combination isn't maintainable, so closely-related variants across
+    // different types intentionally share the same illustration via switch
+    // fallthrough (multiple @case lines stacked before one shared block) —
+    // the variant's label underneath is what actually distinguishes them.
     $card = 'border-radius:6px;overflow:hidden;';
     $muted = '#e5e7eb';
     $mutedDark = '#cbd5e1';
@@ -25,8 +31,12 @@
                     @php $isActive = $activeVariant === $variantKey; @endphp
                     <div style="border-radius:8px;padding:6px;{{ $isActive ? 'box-shadow:0 0 0 2px '.$indigo.';' : 'box-shadow:0 0 0 1px '.$muted.';' }}">
                         @switch($type.':'.$variantKey)
-                            {{-- hero --}}
+                            {{-- hero:split family — 2-col text + image --}}
                             @case('hero:split')
+                            @case('rich_text:two_column')
+                            @case('video:side_by_side')
+                            @case('map:side_info')
+                            @case('quote:side_photo')
                                 <div style="{{ $card }} background:linear-gradient(135deg,#e0e7ff,#dbeafe);padding:14px 12px;">
                                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center;">
                                         <div>
@@ -37,12 +47,21 @@
                                     </div>
                                 </div>
                                 @break
+
+                            {{-- hero:minimal family — solid colour centered box --}}
                             @case('hero:minimal')
+                            @case('hero:banner')
+                            @case('rich_text:highlight')
+                            @case('cta:gradient')
+                            @case('quote:large_type')
+                            @case('pricing_table:featured_center')
                                 <div style="{{ $card }} background:linear-gradient(135deg,{{ $indigo }},#312e81);padding:16px 10px;text-align:center;">
                                     <div style="height:8px;width:60%;background:#fff;border-radius:3px;margin:0 auto 6px;"></div>
                                     <div style="height:5px;width:38%;background:rgba(255,255,255,.6);border-radius:3px;margin:0 auto;"></div>
                                 </div>
                                 @break
+
+                            {{-- hero:center — same as above plus a bottom wave divider --}}
                             @case('hero:center')
                                 <div style="{{ $card }} background:linear-gradient(135deg,{{ $indigo }},#312e81);padding:16px 10px;text-align:center;position:relative;">
                                     <div style="height:8px;width:60%;background:#fff;border-radius:3px;margin:0 auto 6px;"></div>
@@ -51,15 +70,9 @@
                                 </div>
                                 @break
 
-                            {{-- rich_text --}}
-                            @case('rich_text:left')
-                                <div style="{{ $card }} background:#fff;text-align:left;">
-                                    <div style="height:9px;width:40%;background:{{ $text }};border-radius:3px;margin-bottom:8px;"></div>
-                                    <div style="height:6px;width:95%;background:{{ $muted }};border-radius:3px;margin-bottom:5px;"></div>
-                                    <div style="height:6px;width:80%;background:{{ $muted }};border-radius:3px;"></div>
-                                </div>
-                                @break
+                            {{-- rich_text:standard family — centered text lines --}}
                             @case('rich_text:standard')
+                            @case('quote:centered')
                                 <div style="{{ $card }} background:#fff;text-align:center;">
                                     <div style="height:9px;width:45%;background:{{ $text }};border-radius:3px;margin:0 auto 8px;"></div>
                                     <div style="height:6px;width:90%;background:{{ $muted }};border-radius:3px;margin:0 auto 5px;"></div>
@@ -67,15 +80,42 @@
                                 </div>
                                 @break
 
-                            {{-- image_gallery --}}
+                            {{-- rich_text:left family — left-aligned plain lines --}}
+                            @case('rich_text:left')
+                            @case('rich_text:boxed')
+                            @case('quote:minimal')
+                            @case('contact_info:minimal')
+                            @case('photo_feature:minimal')
+                            @case('news_list:minimal_list')
+                            @case('downloads:minimal')
+                            @case('map:minimal')
+                            @case('pricing_table:minimal')
+                            @case('testimonials:minimal_quote')
+                                <div style="{{ $card }} background:#fff;text-align:left;">
+                                    <div style="height:9px;width:40%;background:{{ $text }};border-radius:3px;margin-bottom:8px;"></div>
+                                    <div style="height:6px;width:95%;background:{{ $muted }};border-radius:3px;margin-bottom:5px;"></div>
+                                    <div style="height:6px;width:80%;background:{{ $muted }};border-radius:3px;"></div>
+                                </div>
+                                @break
+
+                            {{-- image_gallery:carousel family — horizontal scroll strip --}}
                             @case('image_gallery:carousel')
+                            @case('image_gallery:strip')
+                            @case('image_gallery:masonry')
+                            @case('team:carousel')
+                            @case('logo_cloud:carousel')
                                 <div style="display:flex;gap:6px;overflow:hidden;">
                                     @for ($i = 0; $i < 3; $i++)
                                         <div style="{{ $card }} min-width:32%;aspect-ratio:4/3;background:{{ $mutedDark }};flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px;">🖼</div>
                                     @endfor
                                 </div>
                                 @break
+
+                            {{-- image_gallery:grid family — 3-tile grid --}}
                             @case('image_gallery:grid')
+                            @case('image_gallery:columns_2')
+                            @case('logo_cloud:grid')
+                            @case('downloads:grid')
                                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
                                     @for ($i = 0; $i < 3; $i++)
                                         <div style="{{ $card }} aspect-ratio:4/3;background:{{ $mutedDark }};display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px;">🖼</div>
@@ -83,8 +123,9 @@
                                 </div>
                                 @break
 
-                            {{-- video --}}
+                            {{-- video:compact family — dark play button box --}}
                             @case('video:compact')
+                            @case('video:framed')
                                 <div style="{{ $card }} aspect-ratio:16/9;background:#1f2937;display:flex;align-items:center;justify-content:center;">
                                     <div style="width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:12px solid #fff;"></div>
                                 </div>
@@ -98,22 +139,33 @@
                                 </div>
                                 @break
 
-                            {{-- cta --}}
+                            {{-- cta:banner family — colour box, centered text + pill --}}
                             @case('cta:banner')
+                            @case('cta:split')
+                            @case('cta:boxed_card')
+                            @case('countdown:banner')
+                            @case('countdown:boxed')
                                 <div style="{{ $card }} background:{{ $indigo }};padding:16px 10px;text-align:center;">
                                     <div style="height:8px;width:60%;background:#fff;border-radius:3px;margin:0 auto 8px;"></div>
                                     <div style="height:14px;width:70px;background:#fff;border-radius:999px;margin:0 auto;"></div>
                                 </div>
                                 @break
+
+                            {{-- cta:plain family — white bordered box, centered text + pill --}}
                             @case('cta:plain')
+                            @case('quote:boxed')
+                            @case('map:boxed')
                                 <div style="{{ $card }} background:#fff;padding:16px 10px;text-align:center;">
                                     <div style="height:8px;width:60%;background:{{ $text }};border-radius:3px;margin:0 auto 8px;"></div>
                                     <div style="height:14px;width:70px;background:{{ $indigo }};border-radius:999px;margin:0 auto;"></div>
                                 </div>
                                 @break
 
-                            {{-- faq --}}
+                            {{-- faq:grid family — 2-col bordered boxes --}}
                             @case('faq:grid')
+                            @case('faq:two_column')
+                            @case('accordion_tabs:two_column')
+                            @case('stats:bordered_grid')
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
                                     @for ($i = 0; $i < 4; $i++)
                                         <div style="{{ $card }} border:1px solid {{ $muted }};padding:8px;">
@@ -123,7 +175,14 @@
                                     @endfor
                                 </div>
                                 @break
+
+                            {{-- faq:accordion family — stacked rows with +/- --}}
                             @case('faq:accordion')
+                            @case('faq:minimal_list')
+                            @case('faq:boxed')
+                            @case('accordion_tabs:accordion')
+                            @case('accordion_tabs:boxed_accordion')
+                            @case('accordion_tabs:numbered_list')
                                 <div style="display:flex;flex-direction:column;gap:6px;">
                                     @for ($i = 0; $i < 3; $i++)
                                         <div style="{{ $card }} border:1px solid {{ $muted }};padding:7px 10px;display:flex;align-items:center;justify-content:space-between;">
@@ -134,8 +193,12 @@
                                 </div>
                                 @break
 
-                            {{-- team --}}
+                            {{-- team:list family — avatar + lines rows --}}
                             @case('team:list')
+                            @case('team:minimal')
+                            @case('downloads:list')
+                            @case('pricing_table:horizontal')
+                            @case('program_cards:horizontal')
                                 <div style="display:flex;flex-direction:column;gap:8px;">
                                     @for ($i = 0; $i < 2; $i++)
                                         <div style="display:flex;align-items:center;gap:8px;">
@@ -148,7 +211,13 @@
                                     @endfor
                                 </div>
                                 @break
+
+                            {{-- team:grid family — circle + label grid --}}
                             @case('team:grid')
+                            @case('team:compact_grid')
+                            @case('logo_cloud:inline_row')
+                            @case('logo_cloud:bordered_grid')
+                            @case('logo_cloud:grayscale')
                                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
                                     @for ($i = 0; $i < 3; $i++)
                                         <div style="text-align:center;">
@@ -159,8 +228,9 @@
                                 </div>
                                 @break
 
-                            {{-- testimonials --}}
+                            {{-- testimonials:grid family — bordered quote cards --}}
                             @case('testimonials:grid')
+                            @case('testimonials:masonry')
                                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
                                     @for ($i = 0; $i < 3; $i++)
                                         <div style="{{ $card }} border:1px solid {{ $muted }};padding:8px;">
@@ -171,6 +241,7 @@
                                     @endfor
                                 </div>
                                 @break
+
                             @case('testimonials:carousel')
                                 <div style="{{ $card }} border:1px solid {{ $muted }};padding:12px;">
                                     <div style="height:6px;width:90%;background:{{ $muted }};border-radius:3px;margin-bottom:5px;"></div>
@@ -183,7 +254,7 @@
                                 </div>
                                 @break
 
-                            {{-- contact_info --}}
+                            {{-- contact_info:stacked --}}
                             @case('contact_info:stacked')
                                 <div>
                                     <div style="display:flex;gap:10px;justify-content:center;margin-bottom:8px;">
@@ -194,7 +265,13 @@
                                     <div style="{{ $card }} background:{{ $mutedDark }};height:36px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;">🗺️</div>
                                 </div>
                                 @break
+
+                            {{-- contact_info:standard family — icon list + map box --}}
                             @case('contact_info:standard')
+                            @case('contact_info:cards')
+                            @case('contact_info:sidebar')
+                            @case('map:standard')
+                            @case('map:fullwidth')
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                                     <div>
                                         @foreach (['📞','📍','✉️'] as $icon)
@@ -208,8 +285,11 @@
                                 </div>
                                 @break
 
-                            {{-- stats --}}
+                            {{-- stats:cards family — bordered number cards --}}
                             @case('stats:cards')
+                            @case('counter:cards')
+                            @case('pricing_table:cards')
+                            @case('downloads:cards')
                                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
                                     @for ($i = 0; $i < 3; $i++)
                                         <div style="{{ $card }} border:1px solid {{ $muted }};padding:8px;text-align:center;">
@@ -219,7 +299,10 @@
                                     @endfor
                                 </div>
                                 @break
+
+                            {{-- stats:inline family --}}
                             @case('stats:inline')
+                            @case('counter:inline')
                                 <div style="display:flex;justify-content:space-around;text-align:center;">
                                     @for ($i = 0; $i < 3; $i++)
                                         <div>
@@ -230,8 +313,9 @@
                                 </div>
                                 @break
 
-                            {{-- feature_list --}}
+                            {{-- feature_list:list family — numbered rows --}}
                             @case('feature_list:list')
+                            @case('feature_list:icons_row')
                                 <div style="display:flex;flex-direction:column;gap:6px;">
                                     @for ($i = 0; $i < 3; $i++)
                                         <div style="display:flex;align-items:center;gap:8px;">
@@ -241,7 +325,10 @@
                                     @endfor
                                 </div>
                                 @break
+
+                            {{-- feature_list:grid family — icon + label cards --}}
                             @case('feature_list:grid')
+                            @case('counter:icons_top')
                                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
                                     @for ($i = 0; $i < 3; $i++)
                                         <div style="{{ $card }} border:1px solid {{ $muted }};padding:8px;text-align:center;">
@@ -252,15 +339,21 @@
                                 </div>
                                 @break
 
-                            {{-- photo_feature --}}
+                            {{-- photo_feature:overlay family — full bg photo + gradient text --}}
                             @case('photo_feature:overlay')
+                            @case('photo_feature:side_card')
+                            @case('video:background')
+                            @case('hero:fullscreen')
                                 <div style="{{ $card }} aspect-ratio:16/9;background:{{ $mutedDark }};position:relative;display:flex;align-items:flex-end;">
                                     <div style="width:100%;background:linear-gradient(transparent,rgba(0,0,0,.6));padding:10px;">
                                         <div style="height:7px;width:60%;background:#fff;border-radius:3px;"></div>
                                     </div>
                                 </div>
                                 @break
+
+                            {{-- photo_feature:standard family --}}
                             @case('photo_feature:standard')
+                            @case('photo_feature:stacked')
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center;">
                                     <div style="{{ $card }} aspect-ratio:4/3;background:{{ $mutedDark }};display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:14px;">🖼</div>
                                     <div>
@@ -270,7 +363,7 @@
                                 </div>
                                 @break
 
-                            {{-- about_split --}}
+                            {{-- about_split:stacked --}}
                             @case('about_split:stacked')
                                 <div>
                                     <div style="height:7px;width:50%;background:{{ $text }};border-radius:3px;margin-bottom:5px;"></div>
@@ -279,7 +372,10 @@
                                     <div style="height:5px;width:80%;background:{{ $muted }};border-radius:3px;"></div>
                                 </div>
                                 @break
+
+                            {{-- about_split:columns family --}}
                             @case('about_split:columns')
+                            @case('about_split:cards')
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                                     <div>
                                         <div style="height:7px;width:70%;background:{{ $text }};border-radius:3px;margin-bottom:5px;"></div>
@@ -292,8 +388,9 @@
                                 </div>
                                 @break
 
-                            {{-- program_cards --}}
+                            {{-- program_cards:minimal family --}}
                             @case('program_cards:minimal')
+                            @case('program_cards:bordered')
                                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
                                     @foreach (['#14b8a6','#6366f1','#ec4899'] as $color)
                                         <div style="{{ $card }} border:1px solid {{ $muted }};padding:10px 6px;text-align:center;">
@@ -303,7 +400,10 @@
                                     @endforeach
                                 </div>
                                 @break
+
+                            {{-- program_cards:colorful family --}}
                             @case('program_cards:colorful')
+                            @case('program_cards:stacked_image')
                                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
                                     @foreach (['#14b8a6','#6366f1','#ec4899'] as $color)
                                         <div style="{{ $card }} background:{{ $color }};padding:10px 6px;text-align:center;">
@@ -313,7 +413,7 @@
                                 </div>
                                 @break
 
-                            {{-- news_list --}}
+                            {{-- news_list:list --}}
                             @case('news_list:list')
                                 <div style="display:flex;flex-direction:column;gap:6px;">
                                     @for ($i = 0; $i < 2; $i++)
@@ -327,6 +427,8 @@
                                     @endfor
                                 </div>
                                 @break
+
+                            {{-- news_list:grid --}}
                             @case('news_list:grid')
                                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
                                     @for ($i = 0; $i < 3; $i++)
@@ -336,6 +438,112 @@
                                                 <div style="height:5px;width:80%;background:{{ $text }};border-radius:3px;"></div>
                                             </div>
                                         </div>
+                                    @endfor
+                                </div>
+                                @break
+
+                            {{-- NEW: one big featured tile + small row below --}}
+                            @case('testimonials:single_featured')
+                            @case('news_list:featured')
+                            @case('news_list:magazine')
+                                <div>
+                                    <div style="{{ $card }} border:1px solid {{ $muted }};padding:8px;margin-bottom:6px;">
+                                        <div style="height:6px;width:60%;background:{{ $text }};border-radius:3px;margin-bottom:4px;"></div>
+                                        <div style="height:5px;width:90%;background:{{ $muted }};border-radius:3px;"></div>
+                                    </div>
+                                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;">
+                                        @for ($i = 0; $i < 3; $i++)
+                                            <div style="{{ $card }} aspect-ratio:4/3;background:{{ $mutedDark }};"></div>
+                                        @endfor
+                                    </div>
+                                </div>
+                                @break
+
+                            {{-- NEW: vertical connected timeline --}}
+                            @case('feature_list:timeline')
+                            @case('about_split:timeline')
+                                <div style="position:relative;padding-left:18px;">
+                                    <div style="position:absolute;left:5px;top:2px;bottom:2px;width:2px;background:{{ $muted }};"></div>
+                                    @for ($i = 0; $i < 3; $i++)
+                                        <div style="position:relative;margin-bottom:8px;">
+                                            <div style="position:absolute;left:-18px;top:1px;width:10px;height:10px;border-radius:999px;background:{{ $indigo }};"></div>
+                                            <div style="height:6px;width:{{ 80 - $i * 10 }}%;background:{{ $muted }};border-radius:3px;"></div>
+                                        </div>
+                                    @endfor
+                                </div>
+                                @break
+
+                            {{-- NEW: horizontal tab bar + content box --}}
+                            @case('about_split:tabs')
+                            @case('accordion_tabs:tabs')
+                                <div>
+                                    <div style="display:flex;gap:5px;margin-bottom:6px;">
+                                        <div style="{{ $card }} background:{{ $indigo }};padding:4px 8px;font-size:9px;color:#fff;">Tab 1</div>
+                                        <div style="{{ $card }} background:{{ $muted }};padding:4px 8px;font-size:9px;color:#9ca3af;">Tab 2</div>
+                                    </div>
+                                    <div style="{{ $card }} border:1px solid {{ $muted }};padding:8px;">
+                                        <div style="height:5px;width:90%;background:{{ $muted }};border-radius:3px;margin-bottom:4px;"></div>
+                                        <div style="height:5px;width:70%;background:{{ $muted }};border-radius:3px;"></div>
+                                    </div>
+                                </div>
+                                @break
+
+                            {{-- NEW: circular progress badges --}}
+                            @case('stats:circular')
+                            @case('counter:circular')
+                                <div style="display:flex;justify-content:space-around;">
+                                    @for ($i = 0; $i < 3; $i++)
+                                        <div style="width:34px;height:34px;border-radius:999px;border:3px solid {{ $indigo }};display:flex;align-items:center;justify-content:center;font-size:9px;color:{{ $indigo }};font-weight:600;">{{ ($i + 1) * 25 }}%</div>
+                                    @endfor
+                                </div>
+                                @break
+
+                            {{-- NEW: full-width gradient band with big numbers --}}
+                            @case('stats:gradient_band')
+                            @case('counter:gradient_band')
+                                <div style="{{ $card }} background:linear-gradient(90deg,{{ $indigo }},#0ea5e9);padding:12px;display:flex;justify-content:space-around;">
+                                    @for ($i = 0; $i < 3; $i++)
+                                        <div style="height:10px;width:22%;background:rgba(255,255,255,.85);border-radius:3px;"></div>
+                                    @endfor
+                                </div>
+                                @break
+
+                            {{-- NEW: table-style rows with a header --}}
+                            @case('pricing_table:table')
+                            @case('downloads:table')
+                                <div style="{{ $card }} border:1px solid {{ $muted }};">
+                                    <div style="background:#f3f4f6;padding:5px 8px;display:flex;justify-content:space-between;">
+                                        <div style="height:5px;width:30%;background:{{ $mutedDark }};border-radius:3px;"></div>
+                                        <div style="height:5px;width:15%;background:{{ $mutedDark }};border-radius:3px;"></div>
+                                    </div>
+                                    @for ($i = 0; $i < 3; $i++)
+                                        <div style="padding:5px 8px;display:flex;justify-content:space-between;border-top:1px solid {{ $muted }};">
+                                            <div style="height:5px;width:50%;background:{{ $muted }};border-radius:3px;"></div>
+                                            <div style="height:5px;width:15%;background:{{ $muted }};border-radius:3px;"></div>
+                                        </div>
+                                    @endfor
+                                </div>
+                                @break
+
+                            {{-- NEW: zig-zag alternating rows --}}
+                            @case('feature_list:alternating')
+                                <div style="display:flex;flex-direction:column;gap:6px;">
+                                    @for ($i = 0; $i < 3; $i++)
+                                        <div style="display:flex;{{ $i % 2 === 1 ? 'flex-direction:row-reverse;' : '' }}align-items:center;gap:6px;">
+                                            <div style="width:20px;height:20px;border-radius:999px;background:{{ $mutedDark }};flex-shrink:0;"></div>
+                                            <div style="height:5px;flex:1;background:{{ $muted }};border-radius:3px;"></div>
+                                        </div>
+                                    @endfor
+                                </div>
+                                @break
+
+                            {{-- NEW: countdown digit boxes --}}
+                            @case('countdown:standard')
+                            @case('countdown:minimal')
+                            @case('countdown:dark')
+                                <div style="display:flex;justify-content:center;gap:5px;">
+                                    @for ($i = 0; $i < 4; $i++)
+                                        <div style="{{ $card }} background:{{ $variantKey === 'dark' ? '#111827' : $indigo }};color:#fff;font-size:11px;font-weight:700;width:24px;height:24px;display:flex;align-items:center;justify-content:center;">{{ str_pad((string) (9 - $i * 2), 2, '0', STR_PAD_LEFT) }}</div>
                                     @endfor
                                 </div>
                                 @break
