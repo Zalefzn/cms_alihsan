@@ -35,13 +35,35 @@ class BlockDefinitions
 
     public static function schemaFor(string $type): array
     {
-        return self::all()[$type]['schema'] ?? [];
+        $schema = self::all()[$type]['schema'] ?? [];
+        if ($schema !== []) {
+            $schema[] = self::customDataField();
+        }
+
+        return $schema;
     }
 
     /** Named visual layouts a block type can be rendered as, keyed by type. Empty array = no variant choice. */
     public static function variantOptions(string $type): array
     {
         return self::all()[$type]['variants'] ?? [];
+    }
+
+    /**
+     * Free-form key/value data every block type can carry, for developer-defined overrides
+     * that don't have a dedicated field yet. Stored under data.custom and passed through
+     * verbatim to the frontend — has no built-in meaning until a component reads specific keys.
+     */
+    protected static function customDataField(): Forms\Components\KeyValue
+    {
+        return Forms\Components\KeyValue::make('data.custom')
+            ->label('Data Kustom (opsional)')
+            ->helperText('Pasangan kunci-nilai bebas untuk kebutuhan khusus (mis. penyesuaian tampilan) yang belum ada field-nya — dibaca developer di frontend sebagai data.custom. Kosongkan jika tidak perlu.')
+            ->keyLabel('Kunci')
+            ->valueLabel('Nilai')
+            ->reorderable()
+            ->addActionLabel('Tambah data kustom')
+            ->columnSpanFull();
     }
 
     public static function all(): array
@@ -77,6 +99,10 @@ class BlockDefinitions
             'rich_text' => [
                 'label' => 'Teks / Paragraf',
                 'description' => 'Teks bebas untuk paragraf atau penjelasan panjang, bisa diberi format (bold, list, dll).',
+                'variants' => [
+                    'standard' => 'Tengah (Standar)',
+                    'left' => 'Rata Kiri',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Tentang Kami'),
                     ...TranslatableField::richEditor('data.body', 'Isi', required: true),
@@ -85,6 +111,10 @@ class BlockDefinitions
             'image_gallery' => [
                 'label' => 'Galeri Gambar',
                 'description' => 'Menampilkan kumpulan foto berjejer, misalnya dokumentasi kegiatan.',
+                'variants' => [
+                    'grid' => 'Grid (Standar)',
+                    'carousel' => 'Carousel — Geser Horizontal',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.caption', 'Keterangan (opsional)', placeholder: 'Dokumentasi kegiatan 2026'),
                     Forms\Components\FileUpload::make('data.images')
@@ -100,6 +130,10 @@ class BlockDefinitions
             'video' => [
                 'label' => 'Video',
                 'description' => 'Menampilkan satu video — bisa link YouTube/Vimeo, atau unggah file sendiri.',
+                'variants' => [
+                    'standard' => 'Standar (dengan judul)',
+                    'compact' => 'Ramping (tanpa judul)',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.caption', 'Keterangan (opsional)', placeholder: 'Profil sekolah dalam 2 menit'),
                     Forms\Components\TextInput::make('data.embed_url')
@@ -121,6 +155,10 @@ class BlockDefinitions
             'cta' => [
                 'label' => 'CTA (Ajakan Bertindak)',
                 'description' => 'Kotak ajakan singkat dengan satu tombol, misalnya mendorong pengunjung untuk mendaftar.',
+                'variants' => [
+                    'plain' => 'Polos (Standar)',
+                    'banner' => 'Banner Warna',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Pendaftaran 2026 Sudah Dibuka'),
                     ...TranslatableField::textarea('data.body', 'Isi', placeholder: 'Ajakan singkat untuk mendorong pengunjung bertindak'),
@@ -136,6 +174,10 @@ class BlockDefinitions
             'faq' => [
                 'label' => 'FAQ (Tanya Jawab)',
                 'description' => 'Daftar pertanyaan yang bisa dibuka-tutup, beserta jawabannya.',
+                'variants' => [
+                    'accordion' => 'Akordeon (Standar)',
+                    'grid' => 'Grid Dua Kolom',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Pertanyaan yang Sering Diajukan'),
                     Forms\Components\Repeater::make('data.items')
@@ -154,6 +196,10 @@ class BlockDefinitions
             'team' => [
                 'label' => 'Tim / Guru',
                 'description' => 'Daftar orang (guru, staff, pengurus) lengkap dengan foto dan jabatan.',
+                'variants' => [
+                    'grid' => 'Grid Bulat (Standar)',
+                    'list' => 'Kartu List Horizontal',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Guru & Staff Kami'),
                     Forms\Components\Repeater::make('data.items')
@@ -183,6 +229,10 @@ class BlockDefinitions
             'testimonials' => [
                 'label' => 'Testimoni',
                 'description' => 'Kutipan/ulasan dari orang tua, alumni, atau siswa, lengkap dengan foto.',
+                'variants' => [
+                    'carousel' => 'Carousel Geser (Standar)',
+                    'grid' => 'Grid Statis',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Apa Kata Mereka'),
                     Forms\Components\Repeater::make('data.items')
@@ -213,6 +263,10 @@ class BlockDefinitions
             'contact_info' => [
                 'label' => 'Info Kontak',
                 'description' => 'Menampilkan alamat, telepon, email, dan peta lokasi sekolah.',
+                'variants' => [
+                    'standard' => 'Berdampingan (Standar)',
+                    'stacked' => 'Bertumpuk (Peta di Bawah)',
+                ],
                 'schema' => [
                     ...TranslatableField::textarea('data.address', 'Alamat', placeholder: 'Jl. Contoh No. 1, Kota, Provinsi'),
                     Forms\Components\TextInput::make('data.phone')
@@ -235,6 +289,10 @@ class BlockDefinitions
             'stats' => [
                 'label' => 'Statistik / Angka',
                 'description' => 'Angka-angka pencapaian, misalnya jumlah siswa atau tahun berdiri.',
+                'variants' => [
+                    'inline' => 'Sejajar (Standar)',
+                    'cards' => 'Kartu Terpisah',
+                ],
                 'schema' => [
                     Forms\Components\Repeater::make('data.items')
                         ->label('Daftar Angka')
@@ -254,6 +312,10 @@ class BlockDefinitions
             'feature_list' => [
                 'label' => 'Daftar Fitur / Program',
                 'description' => 'Daftar keunggulan atau program, masing-masing dengan judul singkat, deskripsi, dan ikon.',
+                'variants' => [
+                    'grid' => 'Grid Kartu (Standar)',
+                    'list' => 'List Bernomor',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Program Unggulan'),
                     ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung di bawah judul'),
@@ -278,6 +340,10 @@ class BlockDefinitions
             'photo_feature' => [
                 'label' => 'Foto + Teks',
                 'description' => 'Foto di satu sisi, judul/teks/daftar singkat/tombol di sisi lain — cocok untuk profil singkat atau ajakan bergabung.',
+                'variants' => [
+                    'standard' => 'Dua Kolom (Standar)',
+                    'overlay' => 'Foto Latar Belakang Penuh',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Kenali Lebih Dekat Al-Ihsan'),
                     ...TranslatableField::textarea('data.body', 'Isi', rows: 4, placeholder: 'Penjelasan singkat'),
@@ -312,6 +378,10 @@ class BlockDefinitions
             'about_split' => [
                 'label' => 'Tentang + Visi & Misi',
                 'description' => 'Dua kolom: profil singkat di kiri, Visi & Misi di kanan — gaya editorial bersih tanpa foto.',
+                'variants' => [
+                    'columns' => 'Dua Kolom (Standar)',
+                    'stacked' => 'Bertumpuk Vertikal',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul Kiri', required: true, placeholder: 'Tentang Kami'),
                     ...TranslatableField::textarea('data.body', 'Isi Kiri', rows: 5, required: true, placeholder: 'Penjelasan singkat tentang sekolah'),
@@ -330,6 +400,10 @@ class BlockDefinitions
             'program_cards' => [
                 'label' => 'Kartu Program',
                 'description' => 'Grid kartu berwarna untuk menampilkan jenjang/program — foto (mengintip di atas kartu), judul, deskripsi, dan warna.',
+                'variants' => [
+                    'colorful' => 'Kartu Warna (Standar)',
+                    'minimal' => 'Kartu Minimalis',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Program Kami'),
                     ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung'),
@@ -380,6 +454,10 @@ class BlockDefinitions
             'news_list' => [
                 'label' => 'Daftar Berita',
                 'description' => 'Kartu berita/event ringkas — judul, tanggal, cuplikan, dan foto.',
+                'variants' => [
+                    'grid' => 'Grid Kartu (Standar)',
+                    'list' => 'List Horizontal',
+                ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Berita & Event Sekolah'),
                     ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung'),
