@@ -242,14 +242,20 @@ class BlockDefinitions
             ],
             'feature_list' => [
                 'label' => 'Daftar Fitur / Program',
-                'description' => 'Daftar keunggulan atau program, masing-masing dengan judul singkat dan deskripsi.',
+                'description' => 'Daftar keunggulan atau program, masing-masing dengan judul singkat, deskripsi, dan ikon.',
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Program Unggulan'),
+                    ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung di bawah judul'),
                     Forms\Components\Repeater::make('data.items')
                         ->label('Daftar Item')
                         ->schema([
                             ...TranslatableField::text('title', 'Judul Item', required: true, placeholder: 'Tahfidz Al-Quran'),
                             ...TranslatableField::textarea('description', 'Deskripsi', placeholder: 'Penjelasan singkat tentang item ini'),
+                            Forms\Components\Select::make('icon')
+                                ->label('Ikon')
+                                ->options(self::iconOptions())
+                                ->native(false)
+                                ->columnSpanFull(),
                         ])
                         ->columns(2)
                         ->reorderable()
@@ -258,6 +264,159 @@ class BlockDefinitions
                         ->columnSpanFull(),
                 ],
             ],
+            'photo_feature' => [
+                'label' => 'Foto + Teks',
+                'description' => 'Foto di satu sisi, judul/teks/daftar singkat/tombol di sisi lain — cocok untuk profil singkat atau ajakan bergabung.',
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Kenali Lebih Dekat Al-Ihsan'),
+                    ...TranslatableField::textarea('data.body', 'Isi', rows: 4, placeholder: 'Penjelasan singkat'),
+                    Forms\Components\Select::make('data.image_position')
+                        ->label('Posisi Foto')
+                        ->options(['right' => 'Kanan', 'left' => 'Kiri'])
+                        ->default('right')
+                        ->native(false),
+                    Forms\Components\FileUpload::make('data.image')
+                        ->label('Foto')
+                        ->image()
+                        ->panelLayout('integrated')
+                        ->imagePreviewHeight('200')
+                        ->directory('blocks')
+                        ->columnSpanFull(),
+                    Forms\Components\Repeater::make('data.features')
+                        ->label('Daftar Singkat (opsional, tampil sebagai chip kecil)')
+                        ->schema([
+                            ...TranslatableField::text('label', 'Teks', required: true, placeholder: 'Lingkungan belajar yang aman'),
+                        ])
+                        ->reorderable()
+                        ->columnSpanFull(),
+                    ...TranslatableField::text('data.cta_text', 'Teks Tombol (opsional)', placeholder: 'Daftar Sekarang'),
+                    Forms\Components\TextInput::make('data.cta_link')
+                        ->label('Link Tombol')
+                        ->url()
+                        ->prefixIcon('heroicon-o-link')
+                        ->placeholder('/penerimaan')
+                        ->columnSpanFull(),
+                ],
+            ],
+            'about_split' => [
+                'label' => 'Tentang + Visi & Misi',
+                'description' => 'Dua kolom: profil singkat di kiri, Visi & Misi di kanan — gaya editorial bersih tanpa foto.',
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul Kiri', required: true, placeholder: 'Tentang Kami'),
+                    ...TranslatableField::textarea('data.body', 'Isi Kiri', rows: 5, required: true, placeholder: 'Penjelasan singkat tentang sekolah'),
+                    ...TranslatableField::text('data.vision_heading', 'Judul Visi', placeholder: 'Visi Kami'),
+                    ...TranslatableField::textarea('data.vision_text', 'Isi Visi', rows: 3, placeholder: 'Pernyataan visi sekolah'),
+                    ...TranslatableField::text('data.mission_heading', 'Judul Misi', placeholder: 'Misi Kami'),
+                    Forms\Components\Repeater::make('data.mission_items')
+                        ->label('Daftar Misi')
+                        ->schema([
+                            ...TranslatableField::text('text', 'Poin Misi', required: true, placeholder: 'Menerapkan ajaran islam pada semua aktivitas sekolah.'),
+                        ])
+                        ->reorderable()
+                        ->columnSpanFull(),
+                ],
+            ],
+            'program_cards' => [
+                'label' => 'Kartu Program',
+                'description' => 'Grid kartu berwarna untuk menampilkan jenjang/program — foto (mengintip di atas kartu), judul, deskripsi, dan warna.',
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Program Kami'),
+                    ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung'),
+                    Forms\Components\Repeater::make('data.items')
+                        ->label('Daftar Program')
+                        ->schema([
+                            ...TranslatableField::text('title', 'Judul', required: true, placeholder: 'Kelompok Bermain (Kober)'),
+                            ...TranslatableField::textarea('description', 'Deskripsi (opsional)', placeholder: 'Penjelasan singkat program ini'),
+                            Forms\Components\FileUpload::make('photo')
+                                ->label('Foto (opsional — tampil bulat di atas kartu)')
+                                ->image()
+                                ->avatar()
+                                ->directory('blocks/program')
+                                ->columnSpanFull(),
+                            Forms\Components\Select::make('icon')
+                                ->label('Ikon (dipakai jika foto kosong)')
+                                ->options(self::iconOptions())
+                                ->default('graduation')
+                                ->native(false)
+                                ->columnSpanFull(),
+                            Forms\Components\Select::make('color')
+                                ->label('Warna Kartu')
+                                ->options([
+                                    'teal' => 'Teal',
+                                    'purple' => 'Ungu',
+                                    'pink' => 'Merah Muda',
+                                    'amber' => 'Kuning',
+                                    'blue' => 'Biru',
+                                ])
+                                ->default('teal')
+                                ->native(false),
+                            Forms\Components\TextInput::make('link')
+                                ->label('Link Tombol "Info Lebih Lanjut" (opsional)')
+                                ->url()
+                                ->placeholder('/akademik-kober'),
+                            Forms\Components\TextInput::make('whatsapp')
+                                ->label('Nomor WhatsApp (opsional, tampilkan tombol WhatsApp)')
+                                ->tel()
+                                ->placeholder('62813xxxxxxx'),
+                        ])
+                        ->columns(2)
+                        ->reorderable()
+                        ->collapsible()
+                        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                        ->columnSpanFull(),
+                ],
+            ],
+            'news_list' => [
+                'label' => 'Daftar Berita',
+                'description' => 'Kartu berita/event ringkas — judul, tanggal, cuplikan, dan foto.',
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Berita & Event Sekolah'),
+                    ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung'),
+                    Forms\Components\Repeater::make('data.items')
+                        ->label('Daftar Berita')
+                        ->schema([
+                            ...TranslatableField::text('title', 'Judul', required: true, placeholder: 'Pembukaan Tahun Ajaran Baru'),
+                            Forms\Components\TextInput::make('date')
+                                ->label('Tanggal')
+                                ->placeholder('25 September 2025'),
+                            ...TranslatableField::textarea('excerpt', 'Cuplikan', placeholder: 'Ringkasan singkat berita'),
+                            Forms\Components\FileUpload::make('image')
+                                ->label('Foto (opsional)')
+                                ->image()
+                                ->panelLayout('integrated')
+                                ->imagePreviewHeight('150')
+                                ->directory('blocks/news')
+                                ->columnSpanFull(),
+                            Forms\Components\TextInput::make('link')
+                                ->label('Link (opsional)')
+                                ->url()
+                                ->placeholder('/berita'),
+                        ])
+                        ->columns(2)
+                        ->reorderable()
+                        ->collapsible()
+                        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                        ->columnSpanFull(),
+                ],
+            ],
+        ];
+    }
+
+    public static function iconOptions(): array
+    {
+        return [
+            'book' => 'Buku',
+            'music' => 'Musik',
+            'palette' => 'Seni / Palet',
+            'heart' => 'Hati',
+            'shield' => 'Keamanan',
+            'users' => 'Orang / Komunitas',
+            'sparkles' => 'Kilau / Kreativitas',
+            'graduation' => 'Topi Wisuda',
+            'smile' => 'Senyum',
+            'globe' => 'Bahasa / Dunia',
+            'award' => 'Penghargaan',
+            'star' => 'Bintang',
         ];
     }
 }

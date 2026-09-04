@@ -52,10 +52,12 @@ class Block extends Model
             );
         }
 
-        if (in_array($this->type, ['team', 'testimonials'], true) && ! empty($data['items'])) {
+        if (in_array($this->type, ['team', 'testimonials', 'program_cards', 'news_list'], true) && ! empty($data['items'])) {
             $data['items'] = array_map(function ($item) {
-                if (! empty($item['photo'])) {
-                    $item['photo'] = Storage::disk('public')->url($item['photo']);
+                foreach (['photo', 'image'] as $field) {
+                    if (! empty($item[$field]) && is_string($item[$field])) {
+                        $item[$field] = Storage::disk('public')->url($item[$field]);
+                    }
                 }
 
                 return $item;
