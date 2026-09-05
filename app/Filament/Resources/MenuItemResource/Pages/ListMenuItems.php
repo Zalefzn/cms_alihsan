@@ -13,6 +13,11 @@ class ListMenuItems extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('build')
+                ->label('Editor Design')
+                ->icon('heroicon-o-squares-2x2')
+                ->color('primary')
+                ->url(fn (): string => MenuItemResource::getUrl('build')),
             Actions\CreateAction::make(),
         ];
     }

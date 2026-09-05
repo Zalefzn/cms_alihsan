@@ -95,6 +95,7 @@ class BlockDefinitions
                         ->panelLayout('integrated')
                         ->imagePreviewHeight('250')
                         ->directory('blocks')
+                        ->live()
                         ->columnSpanFull(),
                 ],
             ],
@@ -132,6 +133,7 @@ class BlockDefinitions
                         ->reorderable()
                         ->panelLayout('grid')
                         ->directory('blocks')
+                        ->live()
                         ->columnSpanFull(),
                 ],
             ],
@@ -161,6 +163,7 @@ class BlockDefinitions
                         ->panelLayout('integrated')
                         ->imagePreviewHeight('250')
                         ->directory('blocks')
+                        ->live()
                         ->columnSpanFull(),
                 ],
             ],
@@ -198,7 +201,7 @@ class BlockDefinitions
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Pertanyaan yang Sering Diajukan'),
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar Pertanyaan')
                         ->schema([
                             ...TranslatableField::text('question', 'Pertanyaan', required: true, placeholder: 'Bagaimana cara mendaftar?'),
@@ -223,7 +226,7 @@ class BlockDefinitions
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Guru & Staff Kami'),
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar Anggota')
                         ->schema([
                             Forms\Components\FileUpload::make('photo')
@@ -231,6 +234,7 @@ class BlockDefinitions
                                 ->image()
                                 ->avatar()
                                 ->directory('blocks/team')
+                                ->live()
                                 ->columnSpanFull(),
                             Forms\Components\TextInput::make('name')
                                 ->label('Nama')
@@ -259,7 +263,7 @@ class BlockDefinitions
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Apa Kata Mereka'),
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar Testimoni')
                         ->schema([
                             Forms\Components\FileUpload::make('photo')
@@ -267,6 +271,7 @@ class BlockDefinitions
                                 ->image()
                                 ->avatar()
                                 ->directory('blocks/testimonials')
+                                ->live()
                                 ->columnSpanFull(),
                             Forms\Components\TextInput::make('name')
                                 ->label('Nama')
@@ -324,7 +329,7 @@ class BlockDefinitions
                     'bordered_grid' => 'Grid Bertepi',
                 ],
                 'schema' => [
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar Angka')
                         ->schema([
                             ...TranslatableField::text('label', 'Label', required: true, placeholder: 'Jumlah Siswa'),
@@ -352,7 +357,7 @@ class BlockDefinitions
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Program Unggulan'),
                     ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung di bawah judul'),
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar Item')
                         ->schema([
                             ...TranslatableField::text('title', 'Judul Item', required: true, placeholder: 'Tahfidz Al-Quran'),
@@ -362,6 +367,12 @@ class BlockDefinitions
                                 ->options(self::iconOptions())
                                 ->native(false)
                                 ->columnSpanFull(),
+                            ...TranslatableField::text('link_text', 'Teks Tombol (opsional)', placeholder: 'Selengkapnya'),
+                            Forms\Components\TextInput::make('link')
+                                ->label('Link Tombol (opsional)')
+                                ->url()
+                                ->prefixIcon('heroicon-o-link')
+                                ->placeholder('/sekolah-unit/tk'),
                         ])
                         ->columns(2)
                         ->reorderable()
@@ -394,8 +405,57 @@ class BlockDefinitions
                         ->panelLayout('integrated')
                         ->imagePreviewHeight('200')
                         ->directory('blocks')
+                        ->live()
                         ->columnSpanFull(),
-                    Forms\Components\Repeater::make('data.features')
+                    Forms\Components\Repeater::make('data.features')->live()
+                        ->label('Daftar Singkat (opsional, tampil sebagai chip kecil)')
+                        ->schema([
+                            ...TranslatableField::text('label', 'Teks', required: true, placeholder: 'Lingkungan belajar yang aman'),
+                        ])
+                        ->reorderable()
+                        ->columnSpanFull(),
+                    ...TranslatableField::text('data.cta_text', 'Teks Tombol (opsional)', placeholder: 'Daftar Sekarang'),
+                    Forms\Components\TextInput::make('data.cta_link')
+                        ->label('Link Tombol')
+                        ->url()
+                        ->prefixIcon('heroicon-o-link')
+                        ->placeholder('/penerimaan')
+                        ->columnSpanFull(),
+                ],
+            ],
+            'video_feature' => [
+                'label' => 'Video + Teks',
+                'description' => 'Video di satu sisi, judul/teks/daftar singkat/tombol di sisi lain — cocok untuk profil sekolah dalam bentuk video atau ajakan bergabung.',
+                'variants' => [
+                    'standard' => 'Dua Kolom (Standar)',
+                    'stacked' => 'Video Atas, Teks Bawah',
+                    'side_card' => 'Kartu Teks Mengambang di Tepi Video',
+                    'minimal' => 'Polos Tanpa Dekorasi',
+                    'framed' => 'Video Berbingkai Dekoratif',
+                ],
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Kenali Lebih Dekat Al-Ihsan Lewat Video'),
+                    ...TranslatableField::textarea('data.body', 'Isi', rows: 4, placeholder: 'Penjelasan singkat'),
+                    Forms\Components\Select::make('data.video_position')
+                        ->label('Posisi Video')
+                        ->options(['right' => 'Kanan', 'left' => 'Kiri'])
+                        ->default('right')
+                        ->native(false),
+                    Forms\Components\TextInput::make('data.embed_url')
+                        ->label('Link YouTube / Vimeo')
+                        ->helperText('Isi ini ATAU unggah file video di bawah, tidak perlu keduanya.')
+                        ->url()
+                        ->prefixIcon('heroicon-o-play-circle')
+                        ->placeholder('https://youtube.com/watch?v=...')
+                        ->live(onBlur: true)
+                        ->columnSpanFull(),
+                    Forms\Components\FileUpload::make('data.video')
+                        ->label('Unggah File Video (opsional)')
+                        ->acceptedFileTypes(['video/mp4', 'video/webm', 'video/ogg'])
+                        ->directory('blocks')
+                        ->live()
+                        ->columnSpanFull(),
+                    Forms\Components\Repeater::make('data.features')->live()
                         ->label('Daftar Singkat (opsional, tampil sebagai chip kecil)')
                         ->schema([
                             ...TranslatableField::text('label', 'Teks', required: true, placeholder: 'Lingkungan belajar yang aman'),
@@ -427,7 +487,7 @@ class BlockDefinitions
                     ...TranslatableField::text('data.vision_heading', 'Judul Visi', placeholder: 'Visi Kami'),
                     ...TranslatableField::textarea('data.vision_text', 'Isi Visi', rows: 3, placeholder: 'Pernyataan visi sekolah'),
                     ...TranslatableField::text('data.mission_heading', 'Judul Misi', placeholder: 'Misi Kami'),
-                    Forms\Components\Repeater::make('data.mission_items')
+                    Forms\Components\Repeater::make('data.mission_items')->live()
                         ->label('Daftar Misi')
                         ->schema([
                             ...TranslatableField::text('text', 'Poin Misi', required: true, placeholder: 'Menerapkan ajaran islam pada semua aktivitas sekolah.'),
@@ -449,7 +509,7 @@ class BlockDefinitions
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Program Kami'),
                     ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung'),
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar Program')
                         ->schema([
                             ...TranslatableField::text('title', 'Judul', required: true, placeholder: 'Kelompok Bermain (Kober)'),
@@ -459,6 +519,7 @@ class BlockDefinitions
                                 ->image()
                                 ->avatar()
                                 ->directory('blocks/program')
+                                ->live()
                                 ->columnSpanFull(),
                             Forms\Components\Select::make('icon')
                                 ->label('Ikon (dipakai jika foto kosong)')
@@ -506,7 +567,7 @@ class BlockDefinitions
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Berita & Event Sekolah'),
                     ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung'),
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar Berita')
                         ->schema([
                             ...TranslatableField::text('title', 'Judul', required: true, placeholder: 'Pembukaan Tahun Ajaran Baru'),
@@ -520,6 +581,7 @@ class BlockDefinitions
                                 ->panelLayout('integrated')
                                 ->imagePreviewHeight('150')
                                 ->directory('blocks/news')
+                                ->live()
                                 ->columnSpanFull(),
                             Forms\Components\TextInput::make('link')
                                 ->label('Link (opsional)')
@@ -545,7 +607,7 @@ class BlockDefinitions
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Kebijakan & Prosedur'),
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar Bagian')
                         ->schema([
                             ...TranslatableField::text('title', 'Judul Bagian', required: true, placeholder: 'Kebijakan Seragam'),
@@ -571,7 +633,7 @@ class BlockDefinitions
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Biaya Pendaftaran'),
                     ...TranslatableField::text('data.subheading', 'Sub Judul (opsional)', placeholder: 'Kalimat pendukung'),
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar Paket')
                         ->schema([
                             ...TranslatableField::text('title', 'Nama Paket', required: true, placeholder: 'Kelompok Bermain'),
@@ -584,8 +646,9 @@ class BlockDefinitions
                                 ->placeholder('/ tahun ajaran'),
                             Forms\Components\Toggle::make('highlighted')
                                 ->label('Tonjolkan Paket Ini')
-                                ->default(false),
-                            Forms\Components\Repeater::make('features')
+                                ->default(false)
+                                ->live(),
+                            Forms\Components\Repeater::make('features')->live()
                                 ->label('Daftar Fitur / Termasuk')
                                 ->schema([
                                     ...TranslatableField::text('label', 'Teks', required: true, placeholder: 'Gratis seragam'),
@@ -622,7 +685,8 @@ class BlockDefinitions
                     Forms\Components\DateTimePicker::make('data.target_date')
                         ->label('Tanggal & Waktu Target')
                         ->required()
-                        ->native(false),
+                        ->native(false)
+                        ->live(),
                     ...TranslatableField::text('data.cta_text', 'Teks Tombol (opsional)', placeholder: 'Daftar Sekarang'),
                     Forms\Components\TextInput::make('data.cta_link')
                         ->label('Link Tombol (opsional)')
@@ -643,7 +707,7 @@ class BlockDefinitions
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Dipercaya & Diakui Oleh'),
-                    Forms\Components\Repeater::make('data.logos')
+                    Forms\Components\Repeater::make('data.logos')->live()
                         ->label('Daftar Logo')
                         ->schema([
                             Forms\Components\FileUpload::make('image')
@@ -652,10 +716,16 @@ class BlockDefinitions
                                 ->panelLayout('integrated')
                                 ->imagePreviewHeight('100')
                                 ->directory('blocks/logos')
+                                ->live()
                                 ->columnSpanFull(),
                             Forms\Components\TextInput::make('label')
                                 ->label('Nama (opsional)')
                                 ->placeholder('Kemendikbud'),
+                            Forms\Components\TextInput::make('link')
+                                ->label('Link (opsional, klik logo membuka halaman ini)')
+                                ->url()
+                                ->prefixIcon('heroicon-o-link')
+                                ->placeholder('https://mitra.co.id'),
                         ])
                         ->columns(2)
                         ->reorderable()
@@ -685,6 +755,7 @@ class BlockDefinitions
                         ->image()
                         ->avatar()
                         ->directory('blocks/quote')
+                        ->live()
                         ->columnSpanFull(),
                 ],
             ],
@@ -700,7 +771,7 @@ class BlockDefinitions
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Pencapaian Kami'),
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar Angka')
                         ->schema([
                             Forms\Components\Select::make('icon')
@@ -737,13 +808,14 @@ class BlockDefinitions
                 ],
                 'schema' => [
                     ...TranslatableField::text('data.heading', 'Judul (opsional)', placeholder: 'Formulir & Dokumen'),
-                    Forms\Components\Repeater::make('data.items')
+                    Forms\Components\Repeater::make('data.items')->live()
                         ->label('Daftar File')
                         ->schema([
                             ...TranslatableField::text('title', 'Nama File', required: true, placeholder: 'Formulir Pendaftaran PPDB'),
                             Forms\Components\FileUpload::make('file')
                                 ->label('File')
                                 ->directory('blocks/downloads')
+                                ->live()
                                 ->columnSpanFull(),
                             Forms\Components\TextInput::make('size_label')
                                 ->label('Keterangan Ukuran (opsional)')
@@ -779,6 +851,41 @@ class BlockDefinitions
                         ->rows(2)
                         ->placeholder('https://maps.google.com/...')
                         ->columnSpanFull(),
+                ],
+            ],
+            'scroll_to_top' => [
+                'label' => 'Tombol Scroll to Top',
+                'description' => 'Tombol mengambang yang muncul setelah pengunjung scroll ke bawah, untuk kembali ke atas halaman. Cukup satu blok ini per halaman.',
+                'variants' => [
+                    'circle' => 'Lingkaran Solid',
+                    'outline' => 'Lingkaran Garis Tepi',
+                    'square' => 'Kotak Membulat',
+                    'pill' => 'Pil dengan Label',
+                    'minimal' => 'Panah Minimalis',
+                ],
+                'schema' => [
+                    Forms\Components\Select::make('data.color')
+                        ->label('Warna')
+                        ->options([
+                            'indigo' => 'Indigo',
+                            'teal' => 'Teal',
+                            'dark' => 'Gelap',
+                        ])
+                        ->default('indigo')
+                        ->native(false),
+                    Forms\Components\Select::make('data.position')
+                        ->label('Posisi')
+                        ->options([
+                            'right' => 'Kanan Bawah',
+                            'left' => 'Kiri Bawah',
+                        ])
+                        ->default('right')
+                        ->native(false),
+                    ...TranslatableField::text(
+                        'data.label',
+                        'Label Tombol (dipakai varian "Pil dengan Label")',
+                        placeholder: 'Ke Atas',
+                    ),
                 ],
             ],
         ];

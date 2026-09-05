@@ -26,12 +26,31 @@ class PageResource extends Resource
     protected static ?string $pluralModelLabel = 'Halaman';
 
     /**
+     * Without this, global search result titles fall back to the generic
+     * model label ("Halaman") for every match instead of the page's own
+     * title — see Resource::getRecordTitle().
+     */
+    protected static ?string $recordTitleAttribute = 'title';
+
+    /**
      * Pages get a custom per-record navigation menu (see
      * AdminPanelProvider) instead of the default single resource link,
      * so this resource's own nav item is turned off to avoid a
      * duplicate.
      */
     protected static bool $shouldRegisterNavigation = false;
+
+    /**
+     * Enables the topbar's global search box (hidden entirely otherwise — see
+     * FilamentManager::isGlobalSearchEnabled(), which needs at least one
+     * resource declaring searchable attributes).
+     *
+     * @return array<string>
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'slug'];
+    }
 
     public static function form(Form $form): Form
     {
@@ -118,6 +137,11 @@ class PageResource extends Resource
                     ->falseLabel('Belum Terbit'),
             ])
             ->actions([
+                Tables\Actions\Action::make('build')
+                    ->label('Desain Halaman')
+                    ->icon('heroicon-o-squares-2x2')
+                    ->color('primary')
+                    ->url(fn (Page $record): string => static::getUrl('build', ['record' => $record])),
                 Tables\Actions\EditAction::make()
                     ->label('Kelola Konten')
                     ->icon('heroicon-o-pencil-square'),
@@ -144,6 +168,7 @@ class PageResource extends Resource
             'index' => Pages\ListPages::route('/'),
             'create' => Pages\CreatePage::route('/create'),
             'edit' => Pages\EditPage::route('/{record}/edit'),
+            'build' => Pages\BuildPage::route('/{record}/build'),
         ];
     }
 }

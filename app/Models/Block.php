@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Support\MediaResolver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 class Block extends Model
 {
@@ -30,41 +30,14 @@ class Block extends Model
     }
 
     /**
-     * The block's `data` for the given locale, with any stored file
-     * paths (from FileUpload fields) turned into publicly accessible
-     * URLs. Which keys hold a file path depends on the block's type —
-     * see BlockDefinitions.
+     * The block's `data` for the given locale, with any stored file paths (from
+     * FileUpload fields) turned into publicly accessible URLs. Walks the whole
+     * data tree recursively — including nested repeater items — so it applies
+     * uniformly across all block types without a per-type field list to maintain.
      */
     public function resolvedData(string $locale = 'id'): array
     {
-        $data = self::localize($this->data ?? [], $locale);
-
-        foreach (['image', 'video'] as $field) {
-            if (! empty($data[$field]) && is_string($data[$field])) {
-                $data[$field] = Storage::disk('public')->url($data[$field]);
-            }
-        }
-
-        if (! empty($data['images']) && is_array($data['images'])) {
-            $data['images'] = array_map(
-                fn ($path) => Storage::disk('public')->url($path),
-                $data['images']
-            );
-        }
-
-        if (in_array($this->type, ['team', 'testimonials', 'program_cards', 'news_list'], true) && ! empty($data['items'])) {
-            $data['items'] = array_map(function ($item) {
-                foreach (['photo', 'image'] as $field) {
-                    if (! empty($item[$field]) && is_string($item[$field])) {
-                        $item[$field] = Storage::disk('public')->url($item[$field]);
-                    }
-                }
-
-                return $item;
-            }, $data['items']);
-        }
-
-        return $data;
+        return MediaResolver::resolveDeep(self::localize($this->data ?? [], $locale));
     }
 
     /**

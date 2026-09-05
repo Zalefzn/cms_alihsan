@@ -19,6 +19,7 @@ class MenuItem extends Model
         'order',
         'is_visible',
         'open_in_new_tab',
+        'dropdown_style',
     ];
 
     protected $casts = [

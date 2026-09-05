@@ -49,6 +49,7 @@ class BlocksRelationManager extends RelationManager
                         'type' => $get('type'),
                         'variant' => $get('data.variant'),
                         'variants' => BlockDefinitions::variantOptions($get('type') ?? ''),
+                        'liveData' => $get('data') ?? [],
                     ])
                     ->visible(fn (Get $get): bool => filled($get('type')))
                     ->dehydrated(false)

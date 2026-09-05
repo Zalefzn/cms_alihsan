@@ -17,6 +17,40 @@
 
     $variants = $variants ?? [];
     $activeVariant = $variant ?? ($variants !== [] ? array_key_first($variants) : null);
+
+    // --- Real live preview: render the admin's actual typed text / uploaded images / list
+    // items (not just an abstract mockup) for whichever variant card is currently active, so
+    // they can judge the real content before committing to a layout. Works generically across
+    // all 23 block types by pulling from whichever of these commonly-named fields exist.
+    // Media resolution (saved path / fresh upload / already-absolute URL) is shared with
+    // Block::resolvedData() and the page builder's live canvas via App\Support\MediaResolver.
+    $resolveMediaUrl = fn ($value) => \App\Support\MediaResolver::resolveValue($value);
+
+    $liveData = $liveData ?? [];
+    $pick = fn (array $keys) => collect($keys)->map(fn ($k) => $liveData[$k] ?? null)->first(fn ($v) => filled($v));
+
+    $previewTitle = $pick(['heading', 'quote', 'name']);
+    $previewSubtitle = $pick(['subheading', 'role', 'vision_heading']);
+    $previewBody = $pick(['body', 'address', 'vision_text']);
+    $previewImage = $resolveMediaUrl($liveData['image'] ?? $liveData['photo'] ?? null)
+        ?: \App\Support\MediaResolver::youtubeThumbnail($liveData['embed_url'] ?? null);
+    $rawItems = $liveData['items'] ?? $liveData['logos'] ?? $liveData['mission_items'] ?? [];
+
+    $previewItems = collect(is_array($rawItems) ? $rawItems : [])
+        ->filter(fn ($item) => is_array($item))
+        ->map(function ($item) use ($resolveMediaUrl) {
+            return [
+                'title' => $item['title'] ?? $item['name'] ?? $item['question'] ?? $item['label'] ?? $item['text'] ?? '',
+                'subtitle' => $item['description'] ?? $item['role'] ?? $item['answer'] ?? $item['body']
+                    ?? $item['quote'] ?? $item['price'] ?? (isset($item['value']) ? ($item['value'] . ($item['suffix'] ?? '')) : null),
+                'image' => $resolveMediaUrl($item['photo'] ?? $item['image'] ?? null),
+            ];
+        })
+        ->filter(fn ($item) => filled($item['title']) || filled($item['image']))
+        ->values()
+        ->all();
+
+    $hasRealContent = filled($previewTitle) || filled($previewBody) || filled($previewImage) || $previewItems !== [];
 @endphp
 
 <div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;background:#fff;">
@@ -26,10 +60,56 @@
 
     <div style="padding:20px;">
         @if ($variants !== [])
-            <div style="display:grid;grid-template-columns:repeat({{ count($variants) }},1fr);gap:12px;">
+            {{-- auto-fill + minmax instead of a fixed count($variants) columns — in the
+                 page builder's narrow ~420px sidebar, forcing e.g. 5 columns squeezes each
+                 card to a sliver; this wraps to as many columns as actually fit (2-3 in the
+                 sidebar, more in the wider table-editor modal) at a readable minimum width. --}}
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;">
                 @foreach ($variants as $variantKey => $variantLabel)
                     @php $isActive = $activeVariant === $variantKey; @endphp
                     <div style="border-radius:8px;padding:6px;{{ $isActive ? 'box-shadow:0 0 0 2px '.$indigo.';' : 'box-shadow:0 0 0 1px '.$muted.';' }}">
+                        @if ($isActive && $hasRealContent)
+                            <div style="{{ $card }} background:#fff;border:1px solid {{ $muted }};">
+                                @if ($previewImage)
+                                    <div style="aspect-ratio:16/9;overflow:hidden;background:{{ $mutedDark }};">
+                                        <img src="{{ $previewImage }}" style="width:100%;height:100%;object-fit:cover;display:block;">
+                                    </div>
+                                @endif
+                                <div style="padding:10px;">
+                                    @if ($previewTitle)
+                                        <div style="font-weight:700;font-size:13px;color:{{ $text }};margin-bottom:3px;line-height:1.3;">
+                                            {{ \Illuminate\Support\Str::limit($previewTitle, 60) }}
+                                        </div>
+                                    @endif
+                                    @if ($previewSubtitle)
+                                        <div style="font-size:11px;color:{{ $indigo }};margin-bottom:4px;">
+                                            {{ \Illuminate\Support\Str::limit($previewSubtitle, 50) }}
+                                        </div>
+                                    @endif
+                                    @if ($previewBody)
+                                        <div style="font-size:11px;color:#6b7280;line-height:1.5;">
+                                            {{ \Illuminate\Support\Str::limit(strip_tags($previewBody), 110) }}
+                                        </div>
+                                    @endif
+                                    @if ($previewItems !== [])
+                                        <div style="display:flex;gap:6px;overflow:hidden;margin-top:{{ ($previewTitle || $previewBody) ? '8px' : '0' }};">
+                                            @foreach (array_slice($previewItems, 0, 4) as $item)
+                                                <div style="flex:1;min-width:0;text-align:center;">
+                                                    @if ($item['image'])
+                                                        <img src="{{ $item['image'] }}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;margin-bottom:3px;">
+                                                    @elseif (!$previewImage && $item['title'])
+                                                        <div style="width:22px;height:22px;border-radius:999px;background:{{ $mutedDark }};margin:0 auto 3px;"></div>
+                                                    @endif
+                                                    <div style="font-size:9px;font-weight:600;color:{{ $text }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                                        {{ \Illuminate\Support\Str::limit($item['title'], 14) }}
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @else
                         @switch($type.':'.$variantKey)
                             {{-- hero:split family — 2-col text + image --}}
                             @case('hero:split')
@@ -86,6 +166,7 @@
                             @case('quote:minimal')
                             @case('contact_info:minimal')
                             @case('photo_feature:minimal')
+                            @case('video_feature:minimal')
                             @case('news_list:minimal_list')
                             @case('downloads:minimal')
                             @case('map:minimal')
@@ -126,6 +207,7 @@
                             {{-- video:compact family — dark play button box --}}
                             @case('video:compact')
                             @case('video:framed')
+                            @case('video_feature:framed')
                                 <div style="{{ $card }} aspect-ratio:16/9;background:#1f2937;display:flex;align-items:center;justify-content:center;">
                                     <div style="width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:12px solid #fff;"></div>
                                 </div>
@@ -342,6 +424,7 @@
                             {{-- photo_feature:overlay family — full bg photo + gradient text --}}
                             @case('photo_feature:overlay')
                             @case('photo_feature:side_card')
+                            @case('video_feature:side_card')
                             @case('video:background')
                             @case('hero:fullscreen')
                                 <div style="{{ $card }} aspect-ratio:16/9;background:{{ $mutedDark }};position:relative;display:flex;align-items:flex-end;">
@@ -354,6 +437,8 @@
                             {{-- photo_feature:standard family --}}
                             @case('photo_feature:standard')
                             @case('photo_feature:stacked')
+                            @case('video_feature:standard')
+                            @case('video_feature:stacked')
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center;">
                                     <div style="{{ $card }} aspect-ratio:4/3;background:{{ $mutedDark }};display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:14px;">🖼</div>
                                     <div>
@@ -551,6 +636,7 @@
                             @default
                                 <div style="color:#9ca3af;font-size:11px;text-align:center;">{{ $variantLabel }}</div>
                         @endswitch
+                        @endif
                         <div style="text-align:center;font-size:11px;margin-top:6px;color:{{ $isActive ? $indigo : '#6b7280' }};font-weight:{{ $isActive ? '600' : '400' }};">
                             {{ $variantLabel }}
                         </div>

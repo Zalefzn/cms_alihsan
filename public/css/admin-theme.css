@@ -1,13 +1,17 @@
 /*
- * Modern dark-sidebar theme for the Al-Ihsan CMS admin panel.
- * The main content area stays light (per client direction); only the
- * sidebar navigation gets a deep indigo background so it reads as a
- * distinct "app chrome" rather than blending into the page.
+ * White-sidebar theme for the Al-Ihsan CMS admin panel: the sidebar and
+ * topbar stay white, active/hover nav items tint indigo/purple, and the
+ * content area behind the white cards gets a light gray backdrop so
+ * sections read as distinct "app chrome" from the page content.
  */
 
 .fi-sidebar {
-    background-color: #1e1b4b;
-    box-shadow: 1px 0 0 0 rgba(255, 255, 255, 0.08);
+    background-color: #ffffff;
+    box-shadow: 1px 0 0 0 rgba(0, 0, 0, 0.06);
+}
+
+.fi-main {
+    background-color: #f3f4f6;
 }
 
 /* Scrollable, but no visible scrollbar track/thumb */
@@ -50,28 +54,122 @@
 }
 
 .fi-sidebar-header {
-    background-color: #17153a;
-    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    background-color: #ffffff;
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.06);
+    justify-content: center;
 }
 
-.fi-sidebar-header .fi-logo {
-    background-color: #fff;
-    padding: 0.35rem 0.6rem;
-    border-radius: 0.6rem;
-}
-
+/* The sidebar-collapse/expand buttons move to the topbar instead (see below) —
+   the sidebar header is left holding only the centered logo. */
 .fi-sidebar-header .fi-icon-btn {
-    color: #a5adcf;
+    display: none !important;
 }
 
-.fi-sidebar-header .fi-icon-btn:hover {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.08);
+/* The topbar's own sidebar toggle buttons ship mobile-only by default
+   (lg:hidden) since desktop normally uses the sidebar-header button instead;
+   override that utility class (NOT !important — Alpine's x-show toggles an
+   inline display style on these same buttons, which must keep winning) to
+   show them at desktop widths too, now that the sidebar-header button is gone. */
+@media (min-width: 1024px) {
+    .fi-topbar-open-sidebar-btn.lg\:hidden,
+    .fi-topbar-close-sidebar-btn.lg\:hidden {
+        display: flex;
+    }
+}
+
+/* User info now lives in the sidebar's fixed footer card (see
+   resources/views/filament/partials/sidebar-user-card.blade.php) instead of
+   the topbar's avatar dropdown — the topbar keeps only notifications, global
+   search, and the sidebar toggle. */
+.fi-topbar .fi-user-menu {
+    display: none !important;
+}
+
+.fi-sidebar-user-card {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 0.75rem 1rem;
+    background-color: #ffffff;
+    flex-shrink: 0;
+}
+
+.fi-sidebar-user-card-info {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.fi-sidebar-user-card-text {
+    flex: 1 1 0%;
+    min-width: 0;
+}
+
+.fi-sidebar-user-card-name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fi-sidebar-user-card-role {
+    font-size: 0.6875rem;
+    color: #6b7280;
+    text-transform: capitalize;
+}
+
+.fi-sidebar-user-card-settings {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    color: #6b7280;
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+.fi-sidebar-user-card-settings svg {
+    width: 1.15rem;
+    height: 1.15rem;
+}
+
+.fi-sidebar-user-card-settings:hover {
+    background-color: rgba(79, 70, 229, 0.08);
+    color: #4f46e5;
+}
+
+.fi-sidebar-user-card-logout-btn {
+    margin-top: 0.625rem;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #dc2626;
+    background-color: rgba(220, 38, 38, 0.08);
+    border: none;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+}
+
+.fi-sidebar-user-card-logout-btn svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.fi-sidebar-user-card-logout-btn:hover {
+    background-color: rgba(220, 38, 38, 0.14);
 }
 
 /* Group labels ("Halaman", "Navigasi Website") */
 .fi-sidebar-group-label {
-    color: #a5b4fc;
+    color: #6366f1;
     font-weight: 600;
     letter-spacing: 0.02em;
 }
@@ -81,20 +179,28 @@
 }
 
 .fi-sidebar-group-collapse-button {
-    color: #a5adcf;
+    color: #9ca3af;
 }
 
 .fi-sidebar-group-button:hover .fi-sidebar-group-collapse-button {
-    color: #ffffff;
+    color: #4f46e5;
 }
 
 /* Nav items */
 .fi-sidebar-item-button:hover {
-    background-color: rgba(255, 255, 255, 0.06);
+    background-color: rgba(79, 70, 229, 0.08);
+}
+
+.fi-sidebar-item-button:hover .fi-sidebar-item-label {
+    color: #4f46e5;
+}
+
+.fi-sidebar-item-button:hover .fi-sidebar-item-icon {
+    color: #4f46e5;
 }
 
 .fi-sidebar-item-label {
-    color: #d1d5db;
+    color: #374151;
 }
 
 .fi-sidebar-item-icon {
@@ -103,29 +209,29 @@
 
 .fi-sidebar-item-grouped-border > div:first-child,
 .fi-sidebar-item-grouped-border > div:nth-child(2) {
-    background-color: rgba(255, 255, 255, 0.14);
+    background-color: rgba(0, 0, 0, 0.08);
 }
 
 .fi-sidebar-item-grouped-border > div:last-child {
-    background-color: #6b7280;
+    background-color: #9ca3af;
 }
 
 .fi-sidebar-item.fi-active .fi-sidebar-item-button,
 .fi-sidebar-item-button.fi-active {
-    background-color: rgba(99, 102, 241, 0.22);
+    background-color: rgba(99, 102, 241, 0.12);
 }
 
 .fi-sidebar-item.fi-active .fi-sidebar-item-label {
-    color: #ffffff;
+    color: #4f46e5;
     font-weight: 600;
 }
 
 .fi-sidebar-item.fi-active .fi-sidebar-item-icon {
-    color: #a5b4fc;
+    color: #4f46e5;
 }
 
 .fi-sidebar-item.fi-active .fi-sidebar-item-grouped-border > div:last-child {
-    background-color: #a5b4fc;
+    background-color: #6366f1;
 }
 
 /* Modern touches on the light content area: a bit more lift on cards */

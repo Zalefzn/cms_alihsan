@@ -6,6 +6,7 @@ use App\Filament\Resources\MenuItemResource\Pages;
 use App\Filament\Resources\MenuItemResource\RelationManagers\ChildrenRelationManager;
 use App\Filament\Support\TranslatableField;
 use App\Models\MenuItem;
+use App\Support\MenuDropdownStyles;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -53,6 +54,12 @@ class MenuItemResource extends Resource
                         Forms\Components\Toggle::make('is_visible')
                             ->label('Tampilkan di navbar')
                             ->default(true),
+                        Forms\Components\Select::make('dropdown_style')
+                            ->label('Gaya Dropdown (jika punya sub menu)')
+                            ->options(MenuDropdownStyles::options())
+                            ->default('simple')
+                            ->native(false)
+                            ->columnSpanFull(),
                     ])
                     ->columns(2),
             ]);
@@ -111,6 +118,7 @@ class MenuItemResource extends Resource
             'index' => Pages\ListMenuItems::route('/'),
             'create' => Pages\CreateMenuItem::route('/create'),
             'edit' => Pages\EditMenuItem::route('/{record}/edit'),
+            'build' => Pages\BuildMenu::route('/build'),
         ];
     }
 }

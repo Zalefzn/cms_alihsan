@@ -42,7 +42,7 @@ class AdminPanelProvider extends PanelProvider
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => '<link rel="stylesheet" href="'.e(asset('css/admin-theme.css')).'">'
+                fn (): string => '<link rel="stylesheet" href="'.e(asset('css/admin-theme.css').'?v='.filemtime(public_path('css/admin-theme.css'))).'">'
                     .'<link rel="manifest" href="'.e(asset('manifest.json')).'">'
                     .'<meta name="theme-color" content="#4f46e5">'
                     .'<link rel="apple-touch-icon" href="'.e(asset('images/icons/icon-192.png')).'">'
@@ -80,9 +80,17 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->sidebarCollapsibleOnDesktop()
+            // The default profile page (Nama, Email, Ganti Password) — linked from the
+            // sidebar footer card's gear icon (see renderHook(SIDEBAR_FOOTER) below)
+            // instead of the topbar avatar dropdown, which is hidden via admin-theme.css.
+            ->profile()
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_FOOTER,
+                fn (): string => view('filament.partials.sidebar-user-card')->render(),
+            )
             ->navigationGroups([
-                NavigationGroup::make('Halaman'),
                 NavigationGroup::make('Navigasi Website'),
+                NavigationGroup::make('Halaman'),
             ])
             ->navigationItems($this->pageNavigationItems())
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
@@ -153,7 +161,10 @@ class AdminPanelProvider extends PanelProvider
                 ->sort($index + 1)
                 ->url(fn () => PageResource::getUrl('edit', ['record' => $page]))
                 ->isActiveWhen(fn () => request()->route('record') == $page->getKey()
-                    && request()->routeIs('filament.admin.resources.pages.edit')))
+                    && request()->routeIs([
+                        'filament.admin.resources.pages.edit',
+                        'filament.admin.resources.pages.build',
+                    ])))
             ->all();
 
         return [$listItem, ...$pageItems];

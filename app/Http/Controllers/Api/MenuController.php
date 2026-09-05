@@ -35,6 +35,7 @@ class MenuController extends Controller
             'label' => $item->localizedLabel($locale),
             'url' => $item->url,
             'open_in_new_tab' => $item->open_in_new_tab,
+            'dropdown_style' => $item->dropdown_style,
             'children' => $item->children->map(fn (MenuItem $child) => $this->transform($child, $locale)),
         ];
     }

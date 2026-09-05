@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public Frontend URL
+    |--------------------------------------------------------------------------
+    |
+    | Base URL of the React frontend (alihsanislamicsch). Used to build the
+    | live-preview iframe src ("{frontend_url}/preview") in the page builder.
+    |
+    */
+
+    'frontend_url' => env('FRONTEND_URL', 'https://alihsanislamicsch.co.id'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
