@@ -585,8 +585,14 @@ class BlockDefinitions
                                 ->directory('blocks/news')
                                 ->live()
                                 ->columnSpanFull(),
+                            ...TranslatableField::textarea(
+                                'content',
+                                'Isi Lengkap (opsional, tampil di jendela pop-up saat kartu diklik)',
+                                rows: 6,
+                                placeholder: 'Isi lengkap berita ini...',
+                            ),
                             Forms\Components\TextInput::make('link')
-                                ->label('Link (opsional)')
+                                ->label('Link (opsional, dipakai hanya jika Isi Lengkap dikosongkan)')
                                 ->url()
                                 ->placeholder('/berita'),
                         ])
