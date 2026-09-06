@@ -15,7 +15,10 @@ CMS berbasis Laravel + [Filament](https://filamentphp.com) untuk mengelola konte
 - **Sitemap.xml** — dihasilkan otomatis dari isi CMS di `/sitemap.xml`, siap didaftarkan ke Google Search Console.
 - **Log Aktivitas** — catatan siapa mengubah apa dan kapan (halaman, blok, menu, pengaturan, pengguna, pendaftar buletin, pendaftaran PPDB), bisa dilihat lewat menu **Alat → Log Aktivitas**.
 - **Riwayat Versi (undo setelah simpan)** — Desain Halaman otomatis menyimpan cadangan isi halaman setiap kali disimpan; tombol **Riwayat Versi** di toolbar builder memuat ulang versi lama kapan saja (masih perlu klik Simpan untuk menerapkannya). Lihat [Desain Halaman](#desain-halaman-page-builder).
-- **Pustaka Media** — lihat semua gambar/video yang pernah diunggah lewat form blok/pengaturan dalam satu grid, dan hapus yang sudah tidak dipakai, lewat menu **Alat → Pustaka Media**.
+- **Pustaka Media** — lihat semua gambar/video yang pernah diunggah lewat form blok/pengaturan dalam satu grid, dan hapus yang sudah tidak dipakai, lewat menu **Alat → Pustaka Media**. Blok "Unduhan Dokumen" juga bisa **memilih langsung file PDF/Word/Excel yang sudah pernah diunggah** dari sini alih-alih unggah ulang.
+- **Duplikat Halaman** — tombol **Duplikat** di tabel Semua Halaman mengkloning sebuah halaman beserta seluruh bloknya sebagai halaman baru (judul & slug baru, otomatis belum terbit) — titik awal cepat untuk halaman yang mirip.
+- **Alur persetujuan (review) sebelum terbit** — pengguna tanpa izin publikasi langsung (mis. `editor`) tidak melihat sakelar "Publikasikan"; mereka mengajukan halaman lewat **Ajukan untuk Ditinjau**, lalu admin meninjau dan memilih **Setujui & Terbitkan** atau **Tolak** (dengan catatan alasan). Lihat [Alur Persetujuan Halaman](#alur-persetujuan-halaman) di bawah.
+- **Autentikasi Dua Faktor (2FA)** — setiap pengguna bisa mengaktifkan sendiri lewat menu **Keamanan Akun (2FA)**: pindai kode QR dengan aplikasi authenticator (Google Authenticator, Authy, dll), lalu login berikutnya meminta kode 6 digit setelah kata sandi. Dilengkapi kode pemulihan sekali pakai untuk jaga-jaga HP hilang. Lihat [Autentikasi Dua Faktor](#autentikasi-dua-faktor-2fa) di bawah.
 - **Notifikasi otomatis** — lonceng di navbar atas mengabari semua admin saat ada halaman baru, status terbit berubah, pendaftaran PPDB baru, atau pelanggan buletin baru. *(Catatan: ini notifikasi dalam-aplikasi/database, bukan email keluar — lingkungan ini belum punya konfigurasi SMTP.)*
 - **Upload gambar & video** langsung dari form blok, dengan pratinjau langsung (thumbnail gambar/video, bukan cuma nama file).
 - **Konten dwibahasa (Indonesia/Inggris)** — tiap field teks (judul halaman, isi blok, label menu, dll) punya pasangan field Inggris yang **otomatis terisi draft terjemahan** begitu field Indonesia-nya selesai diketik, plus tombol "Terjemahkan" untuk memicu ulang kapan saja. Lihat bagian [Konten dwibahasa](#konten-dwibahasa) di bawah.
@@ -69,6 +72,20 @@ Sidebar (putih, dengan status aktif/hover warna ungu) punya lima grup: **Penggun
    - Tidak ada yang tersimpan ke database sampai Anda klik **Simpan Semua Perubahan**.
    - Tabel **Kelola Konten** (drag & drop baris biasa, tanpa pratinjau langsung) tetap tersedia lewat link "← Kembali ke Editor Tabel (alternatif lama)" di pojok kiri atas builder.
 
+### Duplikat Halaman
+
+Di tabel **Semua Halaman**, klik **Duplikat** pada baris halaman mana pun untuk membuka form kecil berisi **Judul Halaman Baru** dan **Slug Halaman Baru** (sudah diisi saran otomatis: "Salinan dari ..." / `{slug}-copy`). Kirim untuk membuat halaman baru dengan seluruh blok konten halaman sumber tersalin persis — halaman baru ini **selalu dibuat belum terbit**, jadi aman untuk disunting dulu sebelum ditayangkan.
+
+### Alur Persetujuan Halaman
+
+Menerbitkan halaman langsung (sakelar **Publikasikan** di form Halaman) dibatasi lewat izin `publish_page` — pada instalasi bawaan hanya `super_admin` yang memilikinya (lihat [Peran & Pengguna](#peran--pengguna)). Pengguna tanpa izin ini (mis. `editor`) tidak melihat sakelar tersebut sama sekali; sebagai gantinya, kolom **Status Tinjauan** di tabel Semua Halaman dan tiga aksi berikut mengatur alurnya:
+
+1. **Ajukan untuk Ditinjau** — tersedia untuk halaman berstatus *Draf* atau *Ditolak*. Menandai halaman sebagai *Menunggu Tinjauan* dan mengirim notifikasi lonceng ke setiap pemegang izin `publish_page`.
+2. **Setujui & Terbitkan** — hanya tampil untuk pemegang izin `publish_page`, pada halaman berstatus *Menunggu Tinjauan*. Menerbitkan halaman (`is_published` jadi aktif) dan mengabari pengaju lewat notifikasi.
+3. **Tolak** — sama syaratnya dengan Setujui, tapi meminta **Alasan Penolakan** (wajib diisi) yang dikirim balik ke pengaju lewat notifikasi, dan halamannya bisa diajukan ulang setelah diperbaiki.
+
+Empat status yang mungkin: **Draf** (belum pernah diajukan), **Menunggu Tinjauan**, **Disetujui**, **Ditolak** — tersimpan di kolom `pages.review_status` beserta `submitted_by`/`submitted_at`/`reviewed_by`/`reviewed_at`/`review_note` untuk jejak audit lengkap (juga tercatat di [Log Aktivitas](#alat)).
+
 ### Menu Navbar & Editor Design
 
 1. Di sidebar, buka grup **Navigasi Website** → **Menu Navbar**.
@@ -119,7 +136,7 @@ Setiap blok punya beberapa **varian tampilan** (biasanya 4–5) yang bisa diband
 | Hitung Mundur | Timer hitung mundur ke sebuah tanggal (mis. penutupan pendaftaran). |
 | Logo Partner / Akreditasi | Deretan logo mitra/akreditasi, tiap logo bisa jadi link sendiri. |
 | Kutipan Tunggal | Satu kutipan besar berdiri sendiri (bukan testimoni). |
-| Unduhan Dokumen | Daftar file yang bisa diunduh pengunjung (formulir, brosur, dst). |
+| Unduhan Dokumen | Daftar file yang bisa diunduh pengunjung (formulir, brosur, dst) — PDF/Word/Excel bisa dipilih dari Pustaka Media atau unggah baru. |
 | Tombol Scroll to Top | Tombol mengambang "kembali ke atas" — pilih warna, posisi, dan salah satu dari 5 gaya (lingkaran, kotak, pil berlabel, dst). Cukup satu blok ini per halaman. |
 | Formulir Pendaftaran (PPDB) | Form pendaftaran calon siswa baru (nama anak, orang tua, telepon, email, unit, pesan) — kiriman masuk langsung ke menu **Pendaftaran PPDB**. |
 
@@ -136,10 +153,23 @@ Dua peran bawaan (dari `database/seeders/RoleSeeder.php`):
 
 | Peran | Bisa apa |
 | --- | --- |
-| `super_admin` | Semua fitur, termasuk mengelola Pengguna & Peran itu sendiri. |
-| `editor` | Lihat, buat, ubah, dan urutkan **Halaman** beserta Blok Kontennya saja — tidak bisa menghapus halaman, dan tidak bisa menyentuh Menu Navbar, Pengguna, atau Peran. |
+| `super_admin` | Semua fitur, termasuk mengelola Pengguna & Peran itu sendiri, dan satu-satunya peran dengan izin `publish_page` (lihat [Alur Persetujuan Halaman](#alur-persetujuan-halaman)). |
+| `editor` | Lihat, buat, ubah, dan urutkan **Halaman** beserta Blok Kontennya saja — tidak bisa menghapus halaman, tidak bisa menerbitkan langsung (harus lewat **Ajukan untuk Ditinjau**), dan tidak bisa menyentuh Menu Navbar, Pengguna, atau Peran. |
 
 Beri peran tambahan (atau buat peran baru, mis. "Editor Menu") kapan saja lewat **Peran & Izin** — perubahan izin langsung berlaku, tidak perlu deploy ulang.
+
+> **Catatan teknis**: `super_admin` di CMS ini **bukan** bypass otomatis via Laravel Gate — Filament Shield di sini mengeksplisitkan setiap permission yang dibuat `shield:generate` langsung ke role `super_admin` (lihat komentar di `RoleSeeder.php`). Permission kustom di luar `shield:generate` (seperti `publish_page`) harus disinkronkan manual ke `super_admin` di seeder yang sama, atau `super_admin` tidak akan otomatis mendapatkannya.
+
+## Autentikasi Dua Faktor (2FA)
+
+Setiap pengguna login mengelola 2FA miliknya sendiri lewat menu **Pengguna & Peran → Keamanan Akun (2FA)** — tidak dibatasi peran, karena ini pengaturan keamanan akun pribadi, bukan hak admin.
+
+1. Klik **Aktifkan Autentikasi Dua Faktor** — muncul kode QR (pindai dengan Google Authenticator/Authy/dll) plus kode rahasia untuk input manual bila kamera tidak tersedia.
+2. Masukkan 6 digit kode yang muncul di aplikasi authenticator untuk **Konfirmasi** — di titik ini 2FA baru benar-benar aktif dan ditampilkan **8 kode pemulihan** satu kali (simpan di tempat aman; setiap kode hanya bisa dipakai sekali sebagai pengganti kode authenticator kalau HP hilang).
+3. Login berikutnya: setelah email+kata sandi benar, form berganti ke tahap **Kode Autentikasi** — link **Pakai kode pemulihan** di sana beralih ke input kode pemulihan bila diperlukan.
+4. Kelola lanjut dari halaman yang sama: **Buat Ulang Kode Pemulihan** (kode lama langsung tidak berlaku) atau **Nonaktifkan 2FA** (perlu konfirmasi kata sandi).
+
+Dibangun dengan [pragmarx/google2fa-qrcode](https://github.com/antonioribeiro/google2fa-qrcode) (standar TOTP, kompatibel semua aplikasi authenticator umum) — kolom `two_factor_secret` dan `two_factor_recovery_codes` di tabel `users` terenkripsi (`encrypted` cast).
 
 ## Konten dwibahasa
 
@@ -248,7 +278,7 @@ CORS sudah diaktifkan untuk semua origin pada path `/api/*` (lihat `config/cors.
 
 ## Struktur konten
 
-- `pages` — satu baris per halaman (`slug`, `title` + `title_en`, `meta_description` + `meta_description_en`, `is_published`).
+- `pages` — satu baris per halaman (`slug`, `title` + `title_en`, `meta_description` + `meta_description_en`, `is_published`, plus kolom [Alur Persetujuan Halaman](#alur-persetujuan-halaman): `review_status`, `review_note`, `submitted_by`/`submitted_at`, `reviewed_by`/`reviewed_at`).
 - `blocks` — banyak baris per halaman (`type`, `order`, `is_visible`, `data` JSON). Urutan blok ditentukan kolom `order`, diubah lewat Desain Halaman atau drag & drop tabel. Setiap field teks dalam `data` punya pasangan `{field}_en` (mis. `heading` + `heading_en`) — lihat [Konten dwibahasa](#konten-dwibahasa).
 - `menu_items` — satu baris per item navbar (`label` + `label_en`, `url`, `parent_id`, `order`, `is_visible`, `open_in_new_tab`, `dropdown_style`). Item dengan `parent_id` null adalah menu utama (`dropdown_style` hanya berlaku untuknya); item dengan `parent_id` terisi adalah sub-menu dropdown.
 - `settings` — satu baris tunggal (dibuat otomatis saat pertama diakses) untuk Pengaturan Situs (`logo`, `site_name`, `topbar_*`, `footer_*`, `social_*`) sekaligus Pengaturan SEO (kolom berawalan `seo_*`).
@@ -256,6 +286,7 @@ CORS sudah diaktifkan untuk semua origin pada path `/api/*` (lihat `config/cors.
 - `registrations` — satu baris per pendaftaran PPDB (`child_name`, `parent_name`, `phone`, `email`, `unit`, `message`, `status`), diisi lewat `POST /api/ppdb`, dikelola dari menu **Pendaftaran PPDB**.
 - `page_revisions` — cadangan blok sebuah halaman sebelum tiap kali disimpan (`page_id`, `user_id`, `blocks` JSON) — hanya 20 terbaru per halaman yang disimpan, dipakai oleh tombol **Riwayat Versi** di Desain Halaman.
 - `activity_log` (dari paket `spatie/laravel-activitylog`) — satu baris per perubahan tercatat (siapa/`causer`, apa/`subject`, kapan, deskripsi), ditampilkan lewat menu **Alat → Log Aktivitas**.
+- `users.two_factor_secret`, `users.two_factor_recovery_codes` (keduanya terenkripsi), `users.two_factor_confirmed_at` — status [Autentikasi Dua Faktor](#autentikasi-dua-faktor-2fa) tiap pengguna.
 
 Tipe blok yang tersedia didefinisikan di `app/Support/BlockDefinitions.php` — tambahkan entri baru di sana untuk menambah tipe blok baru (form admin, termasuk kartu pratinjau varian di [Desain Halaman](#desain-halaman-page-builder), akan otomatis mengikuti). Untuk field teks yang perlu versi Inggris, gunakan `App\Filament\Support\TranslatableField::text()` / `::textarea()` / `::richEditor()` alih-alih komponen Filament biasa — ini otomatis membuatkan pasangan field `{nama}` + `{nama}_en` lengkap dengan auto-translate. Sebuah tipe blok baru juga butuh renderer React-nya sendiri di sisi frontend — lihat [Menghubungkan ke website React](#menghubungkan-ke-website-react).
 

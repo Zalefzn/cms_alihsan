@@ -9,6 +9,7 @@ use App\Models\Page;
 use App\Support\PageIconOptions;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -97,7 +98,23 @@ class PageResource extends Resource
                             ->required(),
                         Forms\Components\Toggle::make('is_published')
                             ->label('Publikasikan')
-                            ->default(true),
+                            ->default(true)
+                            ->visible(fn (): bool => auth()->user()->can('publish_page'))
+                            ->dehydrateStateUsing(fn (string $operation, bool $state): bool => ($operation === 'create' && ! auth()->user()->can('publish_page'))
+                                ? false
+                                : $state)
+                            ->helperText('Hanya pemegang izin publikasi yang bisa menerbitkan langsung. Tanpa izin ini, gunakan tombol "Ajukan untuk Ditinjau" di tabel Semua Halaman setelah kontennya siap.'),
+                        Forms\Components\Placeholder::make('review_status_display')
+                            ->label('Status Tinjauan')
+                            ->content(fn (?Page $record): string => $record
+                                ? (Page::REVIEW_STATUSES[$record->review_status] ?? $record->review_status)
+                                : Page::REVIEW_STATUSES['draft'])
+                            ->visible(fn (): bool => ! auth()->user()->can('publish_page')),
+                        Forms\Components\Placeholder::make('review_note_display')
+                            ->label('Catatan Peninjau')
+                            ->content(fn (?Page $record): string => $record?->review_note ?: '—')
+                            ->visible(fn (?Page $record): bool => ! auth()->user()->can('publish_page')
+                                && $record?->review_status === 'rejected'),
                     ])
                     ->columns(2),
             ]);
@@ -125,6 +142,16 @@ class PageResource extends Resource
                 Tables\Columns\IconColumn::make('is_published')
                     ->label('Terbit')
                     ->boolean(),
+                Tables\Columns\TextColumn::make('review_status')
+                    ->label('Status Tinjauan')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => Page::REVIEW_STATUSES[$state] ?? $state)
+                    ->color(fn (string $state): string => match ($state) {
+                        'in_review' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Diperbarui')
                     ->dateTime('d M Y H:i')
@@ -135,6 +162,9 @@ class PageResource extends Resource
                     ->label('Status Terbit')
                     ->trueLabel('Terbit')
                     ->falseLabel('Belum Terbit'),
+                Tables\Filters\SelectFilter::make('review_status')
+                    ->label('Status Tinjauan')
+                    ->options(Page::REVIEW_STATUSES),
             ])
             ->actions([
                 Tables\Actions\Action::make('build')
@@ -145,6 +175,112 @@ class PageResource extends Resource
                 Tables\Actions\EditAction::make()
                     ->label('Kelola Konten')
                     ->icon('heroicon-o-pencil-square'),
+                Tables\Actions\Action::make('duplicate')
+                    ->label('Duplikat')
+                    ->icon('heroicon-o-document-duplicate')
+                    ->color('gray')
+                    ->visible(fn (): bool => static::canCreate())
+                    ->form([
+                        Forms\Components\TextInput::make('title')
+                            ->label('Judul Halaman Baru')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('slug')
+                            ->label('Slug Halaman Baru')
+                            ->required()
+                            ->unique('pages', 'slug')
+                            ->alphaDash()
+                            ->maxLength(255),
+                    ])
+                    ->fillForm(fn (Page $record): array => [
+                        'title' => "Salinan dari {$record->title}",
+                        'slug' => self::uniqueDuplicateSlug($record->slug),
+                    ])
+                    ->action(function (Page $record, array $data): void {
+                        $copy = $record->replicate(['slug', 'title']);
+                        $copy->title = $data['title'];
+                        $copy->slug = $data['slug'];
+                        // A duplicate starts hidden so it can be reviewed/adjusted
+                        // before going live under its own slug — never auto-published.
+                        $copy->is_published = false;
+                        $copy->save();
+
+                        foreach ($record->blocks()->orderBy('order')->get() as $block) {
+                            $copy->blocks()->create($block->only(['type', 'order', 'is_visible', 'data']));
+                        }
+
+                        Notification::make()
+                            ->title('Halaman berhasil diduplikat')
+                            ->body("\"{$copy->title}\" dibuat dengan ".$copy->blocks()->count().' blok, belum diterbitkan.')
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\Action::make('submitForReview')
+                    ->label('Ajukan untuk Ditinjau')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color('warning')
+                    ->visible(fn (Page $record): bool => ! auth()->user()->can('publish_page')
+                        && in_array($record->review_status, ['draft', 'rejected'], true))
+                    ->requiresConfirmation()
+                    ->modalDescription('Admin akan diberi tahu untuk meninjau halaman ini sebelum diterbitkan.')
+                    ->action(function (Page $record): void {
+                        $record->update([
+                            'review_status' => 'in_review',
+                            'submitted_by' => auth()->id(),
+                            'submitted_at' => now(),
+                            'review_note' => null,
+                        ]);
+
+                        Notification::make()
+                            ->title('Diajukan untuk ditinjau')
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\Action::make('approveReview')
+                    ->label('Setujui & Terbitkan')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (Page $record): bool => auth()->user()->can('publish_page')
+                        && $record->review_status === 'in_review')
+                    ->requiresConfirmation()
+                    ->action(function (Page $record): void {
+                        $record->update([
+                            'review_status' => 'approved',
+                            'is_published' => true,
+                            'reviewed_by' => auth()->id(),
+                            'reviewed_at' => now(),
+                        ]);
+
+                        Notification::make()
+                            ->title('Halaman disetujui dan diterbitkan')
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\Action::make('rejectReview')
+                    ->label('Tolak')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->visible(fn (Page $record): bool => auth()->user()->can('publish_page')
+                        && $record->review_status === 'in_review')
+                    ->form([
+                        Forms\Components\Textarea::make('review_note')
+                            ->label('Alasan Penolakan')
+                            ->required()
+                            ->placeholder('Jelaskan apa yang perlu diperbaiki sebelum diajukan ulang'),
+                    ])
+                    ->action(function (Page $record, array $data): void {
+                        $record->update([
+                            'review_status' => 'rejected',
+                            'review_note' => $data['review_note'],
+                            'reviewed_by' => auth()->id(),
+                            'reviewed_at' => now(),
+                        ]);
+
+                        Notification::make()
+                            ->title('Halaman ditolak')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -153,6 +289,24 @@ class PageResource extends Resource
                 ]),
             ])
             ->defaultSort('title');
+    }
+
+    /**
+     * "{slug}-copy", or "{slug}-copy-2", "{slug}-copy-3", … the first one not
+     * already taken — pre-filled into the duplicate form's slug field so the
+     * default suggestion doesn't immediately fail the uniqueness check.
+     */
+    protected static function uniqueDuplicateSlug(string $slug): string
+    {
+        $candidate = "{$slug}-copy";
+        $suffix = 2;
+
+        while (Page::query()->where('slug', $candidate)->exists()) {
+            $candidate = "{$slug}-copy-{$suffix}";
+            $suffix++;
+        }
+
+        return $candidate;
     }
 
     public static function getRelations(): array

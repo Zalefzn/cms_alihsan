@@ -47,6 +47,46 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * True only once a secret has been generated AND confirmed with a valid code —
+     * a secret alone (mid-setup, QR scanned but not yet confirmed) doesn't count,
+     * so an abandoned setup never silently locks the account's next login.
+     */
+    public function hasEnabledTwoFactorAuthentication(): bool
+    {
+        return ! is_null($this->two_factor_secret) && ! is_null($this->two_factor_confirmed_at);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function recoveryCodes(): array
+    {
+        return $this->two_factor_recovery_codes ?? [];
+    }
+
+    /**
+     * Consumes (single-use) a recovery code during the login challenge, as a
+     * fallback when the authenticator app itself isn't available.
+     */
+    public function consumeRecoveryCode(string $code): bool
+    {
+        $codes = $this->recoveryCodes();
+        $normalized = strtoupper(trim($code));
+
+        if (! in_array($normalized, $codes, true)) {
+            return false;
+        }
+
+        $this->two_factor_recovery_codes = array_values(array_diff($codes, [$normalized]));
+        $this->save();
+
+        return true;
     }
 }

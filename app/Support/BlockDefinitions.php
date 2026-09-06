@@ -4,6 +4,8 @@ namespace App\Support;
 
 use App\Filament\Support\TranslatableField;
 use Filament\Forms;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * Central definition of every block "type" a page can be built from:
@@ -812,8 +814,31 @@ class BlockDefinitions
                         ->label('Daftar File')
                         ->schema([
                             ...TranslatableField::text('title', 'Nama File', required: true, placeholder: 'Formulir Pendaftaran PPDB'),
+                            Forms\Components\Select::make('media_pick')
+                                ->label('Pilih dari Pustaka Media')
+                                ->helperText('File PDF/Word/Excel yang sudah pernah diunggah — pilih di sini agar tidak perlu unggah ulang. Kosongkan dan pakai "Atau Unggah File Baru" di bawah untuk file yang belum pernah ada.')
+                                ->options(fn (): array => self::documentLibraryOptions())
+                                ->searchable()
+                                ->native(false)
+                                ->live()
+                                ->dehydrated(false)
+                                ->afterStateUpdated(function (?string $state, callable $set): void {
+                                    if ($state) {
+                                        $set('file', $state);
+                                        $set('size_label', self::documentSizeLabel($state));
+                                    }
+                                })
+                                ->columnSpanFull(),
                             Forms\Components\FileUpload::make('file')
-                                ->label('File')
+                                ->label('Atau Unggah File Baru')
+                                ->helperText('Mengunggah di sini akan menggantikan pilihan dari Pustaka Media di atas.')
+                                ->acceptedFileTypes([
+                                    'application/pdf',
+                                    'application/msword',
+                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                    'application/vnd.ms-excel',
+                                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                ])
                                 ->directory('blocks/downloads')
                                 ->live()
                                 ->columnSpanFull(),
@@ -902,6 +927,40 @@ class BlockDefinitions
                 ],
             ],
         ];
+    }
+
+    /**
+     * PDF/Word/Excel files already sitting in the public disk (uploaded from anywhere
+     * — this block, another block, or Pustaka Media itself), keyed by their storage
+     * path so picking one just reuses that path instead of re-uploading the same file.
+     *
+     * @return array<string, string>
+     */
+    public static function documentLibraryOptions(): array
+    {
+        $extensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
+
+        return collect(Storage::disk('public')->allFiles())
+            ->filter(fn (string $path): bool => in_array(
+                strtolower(pathinfo($path, PATHINFO_EXTENSION)),
+                $extensions,
+                true,
+            ))
+            ->sortByDesc(fn (string $path): int => Storage::disk('public')->lastModified($path))
+            ->mapWithKeys(fn (string $path): array => [$path => basename($path)])
+            ->all();
+    }
+
+    protected static function documentSizeLabel(string $path): string
+    {
+        $bytes = Storage::disk('public')->size($path);
+        $extension = strtoupper(pathinfo($path, PATHINFO_EXTENSION));
+
+        $size = $bytes < 1024 * 1024
+            ? round($bytes / 1024, 1).' KB'
+            : round($bytes / (1024 * 1024), 1).' MB';
+
+        return "{$extension}, {$size}";
     }
 
     public static function iconOptions(): array
