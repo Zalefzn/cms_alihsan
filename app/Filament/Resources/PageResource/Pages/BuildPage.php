@@ -660,9 +660,15 @@ class BuildPage extends Page implements HasForms
         return $this->buildPreviewPayload();
     }
 
+    /**
+     * The cache-busting query param prevents the browser from ever serving a stale
+     * cached response for this URL across page loads — without it, an admin who had
+     * the builder open before a frontend redeploy could keep seeing a stale (or 404)
+     * preview indefinitely, since the iframe src string never otherwise changes.
+     */
     public function getPreviewUrl(): string
     {
-        return rtrim(config('app.frontend_url'), '/').'/preview';
+        return rtrim(config('app.frontend_url'), '/').'/preview?v='.time();
     }
 
     public function getPreviewOrigin(): string
