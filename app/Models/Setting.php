@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Support\MediaResolver;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * Single-row settings table (site identity, navbar top bar, footer) editable
@@ -22,7 +22,7 @@ class Setting extends Model
     {
         return LogOptions::defaults()
             ->logOnlyDirty()
-            ->dontLogEmptyChanges()
+            ->dontSubmitEmptyLogs()
             ->useLogName('setting');
     }
 

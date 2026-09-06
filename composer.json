@@ -15,7 +15,7 @@
         "laravel/tinker": "^3.0",
         "mallardduck/blade-lucide-icons": "^2.0",
         "pragmarx/google2fa-qrcode": "^4.0",
-        "spatie/laravel-activitylog": "^5.1",
+        "spatie/laravel-activitylog": "^4.12",
         "spatie/laravel-medialibrary": "^11.23",
         "spatie/laravel-permission": "^6.25"
     },
@@ -86,6 +86,9 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
+        "platform": {
+            "php": "8.3.0"
+        },
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true

@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * Email addresses captured from the frontend footer's "Berlangganan Buletin
@@ -19,7 +19,7 @@ class NewsletterSubscriber extends Model
     {
         return LogOptions::defaults()
             ->logOnly(['email', 'locale'])
-            ->dontLogEmptyChanges()
+            ->dontSubmitEmptyLogs()
             ->useLogName('newsletter_subscriber');
     }
 
