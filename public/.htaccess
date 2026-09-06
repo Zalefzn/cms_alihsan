@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    # Serve public storage files without needing a symlink (symlink() is disabled on this host)
+    RewriteCond %{REQUEST_URI} ^/storage/
+    RewriteRule ^storage/(.*)$ storage.php [L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
