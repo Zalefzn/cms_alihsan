@@ -888,6 +888,19 @@ class BlockDefinitions
                     ),
                 ],
             ],
+            'ppdb_form' => [
+                'label' => 'Formulir Pendaftaran (PPDB)',
+                'description' => 'Formulir pendaftaran calon siswa baru — nama anak, orang tua, telepon, email, unit, pesan. Terkirim langsung ke menu "Pendaftaran PPDB".',
+                'variants' => [
+                    'standard' => 'Standar (Standar)',
+                    'boxed' => 'Kotak Terpisah',
+                    'split' => 'Teks Kiri, Formulir Kanan',
+                ],
+                'schema' => [
+                    ...TranslatableField::text('data.heading', 'Judul', required: true, placeholder: 'Formulir Pendaftaran Siswa Baru'),
+                    ...TranslatableField::textarea('data.subheading', 'Sub Judul (opsional)', placeholder: 'Isi data di bawah ini, tim kami akan segera menghubungi Anda'),
+                ],
+            ],
         ];
     }
 

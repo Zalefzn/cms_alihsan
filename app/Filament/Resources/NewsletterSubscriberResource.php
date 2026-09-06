@@ -26,9 +26,9 @@ class NewsletterSubscriberResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Pelanggan Buletin';
 
-    protected static ?string $navigationGroup = 'Navigasi Website';
+    protected static ?string $navigationGroup = 'Formulir & Pendaftaran';
 
-    protected static ?int $navigationSort = 30;
+    protected static ?int $navigationSort = 20;
 
     public static function form(Form $form): Form
     {

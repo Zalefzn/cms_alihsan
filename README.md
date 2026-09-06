@@ -6,15 +6,21 @@ CMS berbasis Laravel + [Filament](https://filamentphp.com) untuk mengelola konte
 
 - **Manajemen Halaman** — satu entri per halaman situs (Beranda, Tentang, Guru, Kontak, dst), langsung terdaftar sebagai sub-menu di sidebar "Halaman" (klik langsung ke halamannya, tanpa lewat tabel dulu).
 - **Desain Halaman (visual page builder)** — editor drag & drop bergaya WordPress: sidebar berisi susunan blok halaman (tambah/hapus/duplikat/urutkan/sembunyikan), form edit tiap blok muncul langsung di sana, dan di sampingnya ada **kanvas pratinjau langsung** — iframe situs React sungguhan yang ikut berubah setiap kali Anda mengetik, lengkap dengan pilihan lebar Desktop/Tablet/Mobile serta **Undo/Redo** (`Ctrl+Z` / `Ctrl+Shift+Z`). Tabel "Kelola Konten" lama tetap ada sebagai alternatif. Lihat [Desain Halaman](#desain-halaman-page-builder) di bawah.
-- **25 tipe blok konten**, masing-masing punya beberapa **varian tampilan** dengan pratinjau visual (bukan cuma nama) langsung di form edit — lihat [Tipe blok yang tersedia](#tipe-blok-yang-tersedia).
+- **26 tipe blok konten**, masing-masing punya beberapa **varian tampilan** dengan pratinjau visual (bukan cuma nama) langsung di form edit — lihat [Tipe blok yang tersedia](#tipe-blok-yang-tersedia).
 - **Menu Navbar + Editor Design** — atur menu navigasi website (label, link, urutan, submenu dropdown) lewat tabel biasa, **atau** lewat builder visual serupa Desain Halaman (tombol **Editor Design**) dengan kanvas pratinjau navbar asli. Setiap menu dengan sub-menu bisa memilih **gaya dropdown** (Daftar Sederhana / Grid 2 Kolom / Kartu dengan Ikon). Lihat [Menu Navbar](#menu-navbar--editor-design).
 - **Pengaturan Situs** — logo, nama & tagline situs, pesan+kontak di topbar, dan isi footer (deskripsi, teks hak cipta, link sosial media) — semua dari satu halaman, tanpa sentuh kode.
 - **Pengaturan SEO** — deskripsi meta & kata kunci bawaan (dipakai kalau sebuah halaman belum diisi sendiri), gambar bagikan (Open Graph) bawaan, domain resmi untuk link canonical, kode verifikasi Google Search Console, dan sakelar izinkan/blokir pengindeksan situs.
 - **Pelanggan Buletin** — daftar email yang mendaftar lewat form "Berlangganan Buletin Sekolah" di footer situs, bisa dilihat dan dihapus dari admin.
+- **Formulir PPDB online** — blok "Formulir Pendaftaran (PPDB)" yang bisa ditaruh di halaman mana pun; pendaftar mengisi form itu langsung di situs, dan datanya masuk ke menu **Pendaftaran PPDB** untuk ditinjau/diubah statusnya (Baru/Diproses/Diterima/Ditolak). Lihat [Formulir & Pendaftaran](#formulir--pendaftaran).
+- **Sitemap.xml** — dihasilkan otomatis dari isi CMS di `/sitemap.xml`, siap didaftarkan ke Google Search Console.
+- **Log Aktivitas** — catatan siapa mengubah apa dan kapan (halaman, blok, menu, pengaturan, pengguna, pendaftar buletin, pendaftaran PPDB), bisa dilihat lewat menu **Alat → Log Aktivitas**.
+- **Riwayat Versi (undo setelah simpan)** — Desain Halaman otomatis menyimpan cadangan isi halaman setiap kali disimpan; tombol **Riwayat Versi** di toolbar builder memuat ulang versi lama kapan saja (masih perlu klik Simpan untuk menerapkannya). Lihat [Desain Halaman](#desain-halaman-page-builder).
+- **Pustaka Media** — lihat semua gambar/video yang pernah diunggah lewat form blok/pengaturan dalam satu grid, dan hapus yang sudah tidak dipakai, lewat menu **Alat → Pustaka Media**.
+- **Notifikasi otomatis** — lonceng di navbar atas mengabari semua admin saat ada halaman baru, status terbit berubah, pendaftaran PPDB baru, atau pelanggan buletin baru. *(Catatan: ini notifikasi dalam-aplikasi/database, bukan email keluar — lingkungan ini belum punya konfigurasi SMTP.)*
 - **Upload gambar & video** langsung dari form blok, dengan pratinjau langsung (thumbnail gambar/video, bukan cuma nama file).
 - **Konten dwibahasa (Indonesia/Inggris)** — tiap field teks (judul halaman, isi blok, label menu, dll) punya pasangan field Inggris yang **otomatis terisi draft terjemahan** begitu field Indonesia-nya selesai diketik, plus tombol "Terjemahkan" untuk memicu ulang kapan saja. Lihat bagian [Konten dwibahasa](#konten-dwibahasa) di bawah.
 - **Dashboard informatif** — statistik jumlah halaman/blok/menu, grafik sebaran tipe blok, dan tabel halaman yang baru diperbarui.
-- **Pencarian global & notifikasi** — kotak cari di navbar atas untuk lompat langsung ke sebuah halaman by judul/slug, dan lonceng notifikasi mengabari admin lain saat ada halaman baru dibuat atau status terbit berubah.
+- **Pencarian global** — kotak cari di navbar atas untuk lompat langsung ke sebuah halaman by judul/slug.
 - **Manajemen Peran & Pengguna** — buat akun untuk tim (misal Editor konten) dan atur lewat UI persis apa yang boleh mereka kelola, tanpa coding. Ganti nama/email/kata sandi akun sendiri lewat menu **Profil** (ikon gerigi di kartu akun, pojok kiri bawah sidebar). Lihat bagian [Peran & Pengguna](#peran--pengguna) di bawah.
 - **REST API publik** untuk diambil oleh frontend — **sudah terintegrasi penuh** ke website React `alihsanislamicsch` (lihat di bawah).
 
@@ -47,7 +53,7 @@ Panel admin bisa diakses di `http://localhost:8000/admin`.
 
 ## Cara pakai panel admin
 
-Sidebar (putih, dengan status aktif/hover warna ungu) punya tiga grup: **Pengguna & Peran**, **Navigasi Website**, dan **Halaman**. Kartu di paling bawah sidebar menampilkan akun yang sedang login (nama, peran, tombol **Keluar**) dan ikon gerigi ke halaman **Profil** (ganti nama/email/kata sandi). Navbar atas hanya berisi kotak **Cari** (pencarian global ke semua halaman), lonceng notifikasi, dan tombol lipat/lebarkan sidebar.
+Sidebar (putih, dengan status aktif/hover warna ungu) punya lima grup: **Pengguna & Peran**, **Navigasi Website**, **Halaman**, **Formulir & Pendaftaran**, dan **Alat**. Kartu di paling bawah sidebar menampilkan akun yang sedang login (nama, peran, tombol **Keluar**) dan ikon gerigi ke halaman **Profil** (ganti nama/email/kata sandi). Navbar atas hanya berisi kotak **Cari** (pencarian global ke semua halaman), lonceng notifikasi, dan tombol lipat/lebarkan sidebar.
 
 ### Desain Halaman (page builder)
 
@@ -59,6 +65,7 @@ Sidebar (putih, dengan status aktif/hover warna ungu) punya tiga grup: **Penggun
    - **Geser** (ikon titik enam) untuk mengurutkan blok lewat drag & drop; ikon mata untuk sembunyikan/tampilkan; ikon salin untuk duplikat; ikon tempat sampah untuk hapus.
    - Kanvas di sebelah kanan adalah situs React sungguhan, berubah **langsung** saat Anda mengetik — pilih lebar **Lebar Penuh / Tablet / Mobile** untuk memeriksa tampilan responsif.
    - **Urungkan/Ulangi** (`Ctrl+Z` / `Ctrl+Shift+Z`) untuk membatalkan perubahan sebelum disimpan.
+   - **Riwayat Versi** membuka daftar cadangan otomatis dari setiap kali halaman ini disimpan sebelumnya (tanggal + siapa yang menyimpan) — klik **Pulihkan** untuk memuat ulang salah satunya ke draft yang sedang diedit (masih bisa diurungkan dengan `Ctrl+Z` selama belum diklik Simpan lagi).
    - Tidak ada yang tersimpan ke database sampai Anda klik **Simpan Semua Perubahan**.
    - Tabel **Kelola Konten** (drag & drop baris biasa, tanpa pratinjau langsung) tetap tersedia lewat link "← Kembali ke Editor Tabel (alternatif lama)" di pojok kiri atas builder.
 
@@ -73,9 +80,15 @@ Sidebar (putih, dengan status aktif/hover warna ungu) punya tiga grup: **Penggun
 - **Navigasi Website → Pengaturan Situs**: logo, nama & tagline situs, pesan selamat datang + telepon/email di topbar, dan isi footer (deskripsi singkat, teks hak cipta, link Website/Facebook/Twitter). Kosongkan field apa pun untuk memakai nilai bawaan (sama seperti tampilan awal situs).
 - **Navigasi Website → Pengaturan SEO**: deskripsi meta & kata kunci bawaan (dipakai kalau sebuah halaman belum mengisi "Deskripsi Meta (SEO)" sendiri di form Kelola Konten-nya), gambar bagikan (Open Graph) bawaan untuk pratinjau link di WhatsApp/Facebook, username Twitter/X, domain resmi situs (untuk link canonical), kode verifikasi Google Search Console, dan sakelar "Izinkan mesin pencari mengindeks situs ini" (matikan sementara saat situs masih tahap pengembangan).
 
-### Pelanggan Buletin
+### Formulir & Pendaftaran
 
-**Navigasi Website → Pelanggan Buletin** menampilkan setiap email yang mendaftar lewat form "Berlangganan Buletin Sekolah" di footer situs (email, bahasa saat mendaftar, tanggal) — tidak ada form tambah manual di sini karena baris hanya pernah masuk lewat pendaftaran publik di situs; hapus baris lewat tombol **Hapus** bila diperlukan.
+- **Pendaftaran PPDB** — setiap kiriman dari blok "Formulir Pendaftaran (PPDB)" di situs (lihat [Tipe blok yang tersedia](#tipe-blok-yang-tersedia)) muncul di sini: nama anak, nama orang tua, telepon, email, unit, pesan, dan tanggal kirim. Ubah **Status**-nya langsung dari kolom dropdown di tabel (Baru/Diproses/Diterima/Ditolak) — jumlah pendaftaran berstatus "Baru" tampil sebagai badge di sidebar. Klik **Lihat** untuk detail lengkap termasuk pesan, atau **Hapus** untuk membuang satu baris. Tidak ada form tambah manual — baris hanya pernah masuk lewat pendaftaran publik di situs.
+- **Pelanggan Buletin** — setiap email yang mendaftar lewat form "Berlangganan Buletin Sekolah" di footer situs (email, bahasa saat mendaftar, tanggal), sama seperti Pendaftaran PPDB tidak ada form tambah manual di sini; hapus baris lewat tombol **Hapus** bila diperlukan.
+
+### Alat
+
+- **Pustaka Media** — grid semua file yang pernah diunggah lewat form blok/pengaturan mana pun (thumbnail, nama, ukuran, tanggal), dengan tautan **Lihat** ke file aslinya dan tombol **Hapus**. Halaman ini tidak tahu di mana sebuah file sedang dipakai — hapus hanya kalau Anda yakin filenya sudah tidak dirujuk di halaman/pengaturan mana pun.
+- **Log Aktivitas** — tabel semua perubahan yang tercatat otomatis (waktu, pengguna, kategori, deskripsi, subjek), bisa dicari dan difilter per kategori. Bersifat catatan saja — tidak ada aksi undo dari sini (untuk itu pakai **Riwayat Versi** di Desain Halaman).
 
 ## Tipe blok yang tersedia
 
@@ -108,6 +121,7 @@ Setiap blok punya beberapa **varian tampilan** (biasanya 4–5) yang bisa diband
 | Kutipan Tunggal | Satu kutipan besar berdiri sendiri (bukan testimoni). |
 | Unduhan Dokumen | Daftar file yang bisa diunduh pengunjung (formulir, brosur, dst). |
 | Tombol Scroll to Top | Tombol mengambang "kembali ke atas" — pilih warna, posisi, dan salah satu dari 5 gaya (lingkaran, kotak, pil berlabel, dst). Cukup satu blok ini per halaman. |
+| Formulir Pendaftaran (PPDB) | Form pendaftaran calon siswa baru (nama anak, orang tua, telepon, email, unit, pesan) — kiriman masuk langsung ke menu **Pendaftaran PPDB**. |
 
 Definisi lengkap tiap tipe (termasuk field & varian) ada di `app/Support/BlockDefinitions.php`.
 
@@ -145,11 +159,14 @@ Semua endpoint bersifat publik (read-only) dan hanya mengembalikan halaman/blok 
 
 | Method | Endpoint                    | Keterangan                                                |
 | ------ | ---------------------------- | ---------------------------------------------------------- |
-| GET    | `/api/pages?lang=id\|en`     | Daftar semua halaman terbit (slug, judul, meta description) — belum dipakai frontend, disediakan untuk kebutuhan lain (mis. sitemap). |
+| GET    | `/api/pages?lang=id\|en`     | Daftar semua halaman terbit (slug, judul, meta description) — belum dipakai frontend maupun sitemap (sitemap mengambil data langsung lewat Eloquent, lihat di bawah), disediakan untuk kebutuhan lain di masa depan. |
 | GET    | `/api/pages/{slug}?lang=id\|en` | Detail satu halaman beserta blok-bloknya, terurut, dengan URL media yang sudah lengkap |
 | GET    | `/api/menu?lang=id\|en`      | Struktur menu navbar (menu utama + sub-menu dropdown), terurut, termasuk `dropdown_style` per menu utama |
 | GET    | `/api/settings?lang=id\|en`  | Pengaturan Situs (logo, nama/tagline, topbar, footer, sosmed) + Pengaturan SEO (dalam field `seo`) |
 | POST   | `/api/newsletter?lang=id\|en` | Mendaftarkan satu email ke Pelanggan Buletin — body JSON `{ "email": "..." }`, dibatasi 5 percobaan/menit per IP |
+| POST   | `/api/ppdb`                  | Mengirim satu pendaftaran PPDB — body JSON `{ "child_name", "parent_name", "phone", "email"?, "unit": "kober"\|"tk"\|"sd", "message"? }`, dibatasi 5 percobaan/menit per IP |
+
+Selain itu ada satu route **non-API** (bukan JSON, tidak di bawah `/api`) untuk mesin pencari: `GET /sitemap.xml` — dihasilkan langsung dari data halaman terbit di CMS (bukan lewat React, karena `alihsanislamicsch` berjalan sebagai SPA statis yang tidak bisa membuat route dinamis sendiri saat request).
 
 Contoh respons `/api/menu`:
 
@@ -236,6 +253,9 @@ CORS sudah diaktifkan untuk semua origin pada path `/api/*` (lihat `config/cors.
 - `menu_items` — satu baris per item navbar (`label` + `label_en`, `url`, `parent_id`, `order`, `is_visible`, `open_in_new_tab`, `dropdown_style`). Item dengan `parent_id` null adalah menu utama (`dropdown_style` hanya berlaku untuknya); item dengan `parent_id` terisi adalah sub-menu dropdown.
 - `settings` — satu baris tunggal (dibuat otomatis saat pertama diakses) untuk Pengaturan Situs (`logo`, `site_name`, `topbar_*`, `footer_*`, `social_*`) sekaligus Pengaturan SEO (kolom berawalan `seo_*`).
 - `newsletter_subscribers` — satu baris per pendaftar buletin (`email`, `locale`, `created_at`), diisi lewat `POST /api/newsletter`.
+- `registrations` — satu baris per pendaftaran PPDB (`child_name`, `parent_name`, `phone`, `email`, `unit`, `message`, `status`), diisi lewat `POST /api/ppdb`, dikelola dari menu **Pendaftaran PPDB**.
+- `page_revisions` — cadangan blok sebuah halaman sebelum tiap kali disimpan (`page_id`, `user_id`, `blocks` JSON) — hanya 20 terbaru per halaman yang disimpan, dipakai oleh tombol **Riwayat Versi** di Desain Halaman.
+- `activity_log` (dari paket `spatie/laravel-activitylog`) — satu baris per perubahan tercatat (siapa/`causer`, apa/`subject`, kapan, deskripsi), ditampilkan lewat menu **Alat → Log Aktivitas**.
 
 Tipe blok yang tersedia didefinisikan di `app/Support/BlockDefinitions.php` — tambahkan entri baru di sana untuk menambah tipe blok baru (form admin, termasuk kartu pratinjau varian di [Desain Halaman](#desain-halaman-page-builder), akan otomatis mengikuti). Untuk field teks yang perlu versi Inggris, gunakan `App\Filament\Support\TranslatableField::text()` / `::textarea()` / `::richEditor()` alih-alih komponen Filament biasa — ini otomatis membuatkan pasangan field `{nama}` + `{nama}_en` lengkap dengan auto-translate. Sebuah tipe blok baru juga butuh renderer React-nya sendiri di sisi frontend — lihat [Menghubungkan ke website React](#menghubungkan-ke-website-react).
 
@@ -243,9 +263,9 @@ Tipe blok yang tersedia didefinisikan di `app/Support/BlockDefinitions.php` — 
 
 Integrasi ke website `alihsanislamicsch` **sudah selesai dikerjakan** — bukan lagi rencana. Ringkasannya, di repo frontend:
 
-- `app/lib/cms.ts` — satu fungsi `fetch` per endpoint (`fetchCmsPage`, `fetchCmsMenu`, `fetchCmsSettings`, `subscribeToNewsletter`) plus tipe TypeScript yang cocok dengan bentuk respons di atas. `VITE_CMS_API_URL` di `.env` menentukan base URL API (`http://127.0.0.1:8001/api` untuk dev lokal, domain CMS produksi untuk build produksi).
+- `app/lib/cms.ts` — satu fungsi `fetch` per endpoint (`fetchCmsPage`, `fetchCmsMenu`, `fetchCmsSettings`, `subscribeToNewsletter`, `submitRegistration`) plus tipe TypeScript yang cocok dengan bentuk respons di atas. `VITE_CMS_API_URL` di `.env` menentukan base URL API (`http://127.0.0.1:8001/api` untuk dev lokal, domain CMS produksi untuk build produksi).
 - `app/hooks/useCmsPage.ts`, `useCmsMenu.ts`, `useCmsSettings.ts` — membungkus fungsi-fungsi itu jadi React hook yang refetch otomatis saat bahasa situs berganti (lewat `i18next`, jadi `?lang=en` terkirim otomatis, tanpa logika terjemahan sendiri di React).
-- `app/components/blocks/BlockRenderer.tsx` — satu komponen React per tipe blok, dipetakan lewat `type` di objek `RENDERERS`; menerima array `blocks` dari `/api/pages/{slug}` dan merender tiap blok sesuai tipenya, dalam urutan `order`.
+- `app/components/blocks/BlockRenderer.tsx` — satu komponen React per tipe blok, dipetakan lewat `type` di objek `RENDERERS`; menerima array `blocks` dari `/api/pages/{slug}` dan merender tiap blok sesuai tipenya, dalam urutan `order`. Blok `ppdb_form` (`PpdbFormBlock`) mengirim form-nya lewat `submitRegistration()` ke `POST /api/ppdb`.
 - `app/components/CmsPageView.tsx` (dipakai hampir semua route), plus `UnitPage.tsx` dan `VisiMisiSummary.tsx` untuk beberapa halaman Sekolah & Unit — ketiganya memanggil `useCmsPage()` lalu `BlockRenderer`, dan `useSeo()` (lihat `app/hooks/useSeo.ts`) untuk menulis `<title>`, meta description/keywords/robots, Open Graph, Twitter Card, dan link canonical ke `<head>` berdasarkan judul/deskripsi halaman itu sendiri (fallback ke Pengaturan SEO kalau kosong).
 - `app/components/navbar.tsx` dan `footer.tsx` — mengambil menu & pengaturan situs lewat `useCmsMenu()`/`useCmsSettings()`; navbar merender gaya dropdown (`dropdown_style`) dan `open_in_new_tab` per menu, footer mengirim form buletin lewat `subscribeToNewsletter()`.
 

@@ -6,10 +6,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class MenuItem extends Model
 {
     use HasFactory;
+    use LogsActivity;
+
+    /**
+     * Covers edits made via the classic "Kelola" table form (a normal Eloquent
+     * save). BuildMenu's bulk query-builder update bypasses model events — see
+     * its own explicit activity log entry for changes made there.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['label', 'url', 'is_visible', 'open_in_new_tab', 'dropdown_style'])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->useLogName('menu_item');
+    }
 
     protected $fillable = [
         'parent_id',

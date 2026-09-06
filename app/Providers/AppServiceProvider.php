@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\NewsletterSubscriber;
 use App\Models\Page;
+use App\Models\Registration;
+use App\Observers\NewsletterSubscriberObserver;
 use App\Observers\PageObserver;
+use App\Observers\RegistrationObserver;
 use Filament\Actions\Action;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Page::observe(PageObserver::class);
+        Registration::observe(RegistrationObserver::class);
+        NewsletterSubscriber::observe(NewsletterSubscriberObserver::class);
 
         $this->registerDefaultActionIcons();
     }

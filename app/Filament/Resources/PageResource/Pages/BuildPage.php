@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PageResource\Pages;
 
 use App\Filament\Resources\PageResource;
 use App\Models\Block;
+use App\Models\PageRevision;
 use App\Support\BlockDefinitions;
 use App\Support\MediaResolver;
 use Filament\Forms;
@@ -73,6 +74,19 @@ class BuildPage extends Page implements HasForms
     public array $redoStack = [];
 
     protected int $maxHistorySize = 25;
+
+    protected int $maxRevisionsPerPage = 20;
+
+    public bool $showRevisions = false;
+
+    /**
+     * Rows for the "Riwayat Versi" panel: {id, created_at, user_name}. Loaded on demand
+     * via openRevisions() rather than kept in sync live, since revisions only ever
+     * change as a side effect of this same page's own save().
+     *
+     * @var array<int, array{id: int, created_at: string, user_name: string}>
+     */
+    public array $revisions = [];
 
     public function mount(int|string $record): void
     {
@@ -664,9 +678,104 @@ class BuildPage extends Page implements HasForms
         return $origin;
     }
 
+    /**
+     * Loads the page's saved revisions (most recent first) for the "Riwayat Versi" panel.
+     */
+    public function openRevisions(): void
+    {
+        $this->revisions = PageRevision::where('page_id', $this->record->id)
+            ->with('user')
+            ->latest('id')
+            ->get()
+            ->map(fn (PageRevision $revision): array => [
+                'id' => $revision->id,
+                'created_at' => $revision->created_at->translatedFormat('d M Y H:i'),
+                'user_name' => $revision->user?->name ?? 'Sistem',
+            ])
+            ->all();
+
+        $this->showRevisions = true;
+    }
+
+    public function closeRevisions(): void
+    {
+        $this->showRevisions = false;
+    }
+
+    /**
+     * Loads a past revision's blocks back into the draft — the admin still has to click
+     * "Simpan Semua Perubahan" to persist it, same as undo/redo, so restoring is itself
+     * reversible before it's committed.
+     */
+    public function restoreRevision(int $revisionId): void
+    {
+        $revision = PageRevision::where('page_id', $this->record->id)->find($revisionId);
+
+        if ($revision === null) {
+            return;
+        }
+
+        $this->snapshotForUndo();
+
+        $this->blocks = $revision->blocks;
+        $this->selectedKey = null;
+        $this->editingBlock = [];
+        $this->showRevisions = false;
+
+        $this->pushPreview();
+
+        Notification::make()
+            ->title('Versi lama dimuat — klik "Simpan Semua Perubahan" untuk menerapkannya')
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Snapshots the page's CURRENT (about-to-be-overwritten) block state so it can be
+     * restored later — save() itself uses a bulk query-builder update that bypasses
+     * Eloquent events, so this is the only place such a snapshot can be taken.
+     */
+    protected function snapshotRevision(): void
+    {
+        $current = $this->record->blocks()
+            ->orderBy('order')
+            ->get()
+            ->map(fn (Block $block): array => [
+                'key' => (string) $block->id,
+                'id' => $block->id,
+                'order' => $block->order,
+                'type' => $block->type,
+                'is_visible' => $block->is_visible,
+                'data' => $block->data ?? [],
+            ])
+            ->values()
+            ->all();
+
+        if ($current === []) {
+            return;
+        }
+
+        PageRevision::create([
+            'page_id' => $this->record->id,
+            'user_id' => auth()->id(),
+            'blocks' => $current,
+        ]);
+
+        $staleIds = PageRevision::where('page_id', $this->record->id)
+            ->orderByDesc('id')
+            ->pluck('id')
+            ->slice($this->maxRevisionsPerPage);
+
+        if ($staleIds->isNotEmpty()) {
+            PageRevision::whereIn('id', $staleIds)->delete();
+        }
+    }
+
     public function save(): void
     {
         $this->commitSelectedBlock();
+
+        $this->snapshotRevision();
 
         DB::transaction(function (): void {
             $existingIds = collect($this->blocks)->pluck('id')->filter()->all();
@@ -692,6 +801,16 @@ class BuildPage extends Page implements HasForms
                 }
             }
         });
+
+        // Block content is written via Block::whereKey()->update()/create() above (a
+        // bulk query-builder path, not $model->save()), which never fires Eloquent's
+        // updating/updated events — so Block's own LogsActivity (if it had one) would
+        // silently miss every change made through this builder. Log it explicitly here.
+        activity('page')
+            ->causedBy(auth()->user())
+            ->performedOn($this->record)
+            ->withProperties(['blocks_count' => count($this->blocks)])
+            ->log('Blok halaman "'.$this->record->title.'" diperbarui');
 
         Notification::make()
             ->title('Semua perubahan tersimpan')

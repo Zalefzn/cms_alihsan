@@ -46,6 +46,16 @@
 
                 <button
                     type="button"
+                    wire:click="openRevisions"
+                    title="Riwayat Versi"
+                    style="display:inline-flex;align-items:center;gap:5px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;padding:8px 12px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;"
+                >
+                    <svg style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Riwayat Versi
+                </button>
+
+                <button
+                    type="button"
                     wire:click="save"
                     wire:loading.attr="disabled"
                     style="display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:8px;background:#4f46e5;padding:10px 16px;font-size:13px;font-weight:600;color:#fff;border:0;cursor:pointer;"
@@ -55,6 +65,45 @@
                 </button>
             </div>
         </div>
+
+        @if ($showRevisions)
+            <div
+                wire:click="closeRevisions"
+                style="position:fixed;inset:0;z-index:100;background:rgba(17,24,39,.5);display:flex;align-items:center;justify-content:center;padding:24px;"
+            >
+                <div
+                    wire:click.stop
+                    style="background:#fff;border-radius:12px;max-width:420px;width:100%;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;"
+                >
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #e5e7eb;">
+                        <h2 style="font-size:14px;font-weight:700;color:#111827;margin:0;">Riwayat Versi</h2>
+                        <button type="button" wire:click="closeRevisions" style="border:0;background:none;cursor:pointer;color:#9ca3af;">&times;</button>
+                    </div>
+                    <div style="overflow-y:auto;padding:8px;">
+                        @forelse ($revisions as $revision)
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 8px;border-radius:8px;{{ !$loop->last ? 'border-bottom:1px solid #f3f4f6;' : '' }}">
+                                <div>
+                                    <p style="margin:0;font-size:13px;font-weight:600;color:#374151;">{{ $revision['created_at'] }}</p>
+                                    <p style="margin:0;font-size:11px;color:#9ca3af;">oleh {{ $revision['user_name'] }}</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    wire:click="restoreRevision({{ $revision['id'] }})"
+                                    title="Perubahan yang belum disimpan saat ini akan diganti (tetap bisa diurungkan dengan Ctrl+Z sebelum menyimpan)"
+                                    style="flex-shrink:0;border-radius:6px;border:1px solid #e5e7eb;background:#fff;padding:6px 10px;font-size:12px;font-weight:600;color:#4f46e5;cursor:pointer;"
+                                >
+                                    Pulihkan
+                                </button>
+                            </div>
+                        @empty
+                            <p style="padding:16px 8px;font-size:12px;color:#9ca3af;text-align:center;">
+                                Belum ada riwayat — riwayat tercatat setiap kali halaman ini disimpan.
+                            </p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <div style="display:flex;gap:12px;min-height:75vh;">
             {{-- Sidebar: unified block navigator + inline editor, WordPress-layout-builder style --}}

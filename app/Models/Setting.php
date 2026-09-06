@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Support\MediaResolver;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * Single-row settings table (site identity, navbar top bar, footer) editable
@@ -14,6 +16,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Setting extends Model
 {
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->useLogName('setting');
+    }
+
     protected $fillable = [
         'logo',
         'site_name',

@@ -91,6 +91,8 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 NavigationGroup::make('Navigasi Website'),
                 NavigationGroup::make('Halaman'),
+                NavigationGroup::make('Formulir & Pendaftaran'),
+                NavigationGroup::make('Alat'),
             ])
             ->navigationItems($this->pageNavigationItems())
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

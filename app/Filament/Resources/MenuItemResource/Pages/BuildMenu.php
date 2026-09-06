@@ -570,6 +570,15 @@ class BuildMenu extends Page implements HasForms
             }
         });
 
+        // MenuItem::whereKey()->update()/create() above is a bulk query-builder path,
+        // not $model->save() — it never fires Eloquent's updating/updated events, so
+        // MenuItem's own LogsActivity would silently miss changes made through this
+        // builder. Log it explicitly here (mirrors BuildPage::save()).
+        activity('menu_item')
+            ->causedBy(auth()->user())
+            ->withProperties(['items_count' => count($this->items)])
+            ->log('Menu navbar diperbarui');
+
         Notification::make()
             ->title('Menu navbar tersimpan')
             ->success()
